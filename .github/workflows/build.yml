@@ -36,9 +36,13 @@ jobs:
 
       - name: Build (onedir + portable zip + installer)
         run: python build.py --all
+        env:
+          ZHIJUAN_VERSION: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || '' }}
 
       - name: Build single-file exe
         run: python build.py --onefile --no-zip
+        env:
+          ZHIJUAN_VERSION: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || '' }}
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4

@@ -19,6 +19,7 @@
 """
 import argparse
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -33,8 +34,22 @@ for _stream in (sys.stdout, sys.stderr):
 
 APP_NAME = "智卷"
 APP_ID = "zhijuan"
-VERSION = "1.0.0"
 ENTRY = "run.py"
+
+
+def _detect_version(default="1.0.0"):
+    """版本号优先取 tag：CI 里 GITHUB_REF_NAME=v1.0.2，本地可用 ZHIJUAN_VERSION"""
+    for key in ("ZHIJUAN_VERSION", "GITHUB_REF_NAME"):
+        raw = (os.environ.get(key) or "").strip()
+        if not raw:
+            continue
+        v = raw[1:] if raw.startswith("v") else raw
+        if re.fullmatch(r"\d+(\.\d+)*", v):
+            return v
+    return default
+
+
+VERSION = _detect_version()
 DATA_DIRS = ["templates", "static", "i18n"]
 ICON_PNG = os.path.join("static", "icon-512.png")
 ICON_ICO = os.path.join("static", "icon.ico")
