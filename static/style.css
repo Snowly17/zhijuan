@@ -5,12 +5,29 @@
 /* ---------- 基础重置 ---------- */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
+/* 字体栈按语言分开：
+   ① 西文优先取 Segoe UI / 系统 UI 字体，保证拉丁字母、数字、标点度量一致
+   ② 中文页面必须把「微软雅黑」排在日文字体前面 —— 否则 Windows 上会先命中
+      Yu Gothic（日文字体），中文被渲染成日文字形、粗体也是合成假粗，看着深浅不匀
+   ③ 只有日文页面才把 Yu Gothic / Hiragino 提前
+   依赖 <html lang>（由 app 按当前语言输出 zh-CN / en-US / ja-JP） */
 body {
-  font-family: -apple-system, "PingFang SC", "Hiragino Sans", "Yu Gothic", "Noto Sans JP", "Microsoft YaHei", sans-serif;
+  font-family: -apple-system, "Segoe UI", "Microsoft YaHei", "PingFang SC",
+               "Hiragino Sans GB", "Source Han Sans SC", "Noto Sans SC", sans-serif;
   background: #f5f6fa;
   color: #2c3e50;
   padding: 24px 16px;
   line-height: 1.6;
+}
+
+html[lang="ja-JP"] body {
+  font-family: -apple-system, "Segoe UI", "Yu Gothic UI", "Yu Gothic",
+               "Hiragino Sans", "Noto Sans JP", "Meiryo", "Microsoft YaHei", sans-serif;
+}
+
+html[lang="en-US"] body {
+  font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial,
+               "Microsoft YaHei", sans-serif;
 }
 
 .container { max-width: 960px; margin: 0 auto; }
@@ -56,7 +73,7 @@ header h1 { font-size: 22px; color: #1a73e8; }
 .lang-switcher a {
   padding: 3px 10px;
   border-radius: 4px;
-  font-size: 12.5px;
+  font-size: 12px;
   color: #5a6a7a;
   text-decoration: none;
   transition: all .2s;
@@ -145,7 +162,7 @@ form input[type="file"] { font-size: 13px; margin-bottom: 8px; }
 
 .btn-tool {
   padding: 4px 12px;
-  font-size: 12.5px;
+  font-size: 12px;
   background: #fff;
   color: #5a6a7a;
   border: 1px solid #d0d7de;
@@ -161,7 +178,7 @@ form input[type="file"] { font-size: 13px; margin-bottom: 8px; }
 
 .btn-danger {
   padding: 4px 12px;
-  font-size: 12.5px;
+  font-size: 12px;
   background: #fff;
   color: #c0392b;
   border: 1px solid #f0c4c0;
@@ -262,7 +279,7 @@ form input[type="file"] { font-size: 13px; margin-bottom: 8px; }
 .range-input-sm:focus { border-color: #1a73e8; }
 .range-hint {
   margin-left: auto;
-  font-size: 12.5px;
+  font-size: 12px;
   color: #a8b2bf;
 }
 .range-hint.ok   { color: #27ae60; font-weight: 600; }
@@ -672,7 +689,7 @@ form input[type="file"] { font-size: 13px; margin-bottom: 8px; }
   margin: 0;
   padding: 10px 0;
   font-family: Consolas, "Courier New", monospace;
-  font-size: 12.5px;
+  font-size: 12px;
   line-height: 1.7;
   color: #2c3e50;
   white-space: pre-wrap;
@@ -691,7 +708,7 @@ form input[type="file"] { font-size: 13px; margin-bottom: 8px; }
   padding-right: 10px;
   color: #a8b2bf;
   user-select: none;
-  font-size: 11.5px;
+  font-size: 12px;
   border-right: 1px solid #eef1f5;
   margin-right: 10px;
 }
@@ -715,7 +732,7 @@ form input[type="file"] { font-size: 13px; margin-bottom: 8px; }
   padding: 14px 16px;
   border-radius: 8px;
   font-family: Consolas, "Courier New", monospace;
-  font-size: 12.5px;
+  font-size: 12px;
   line-height: 1.6;
   max-height: 520px;
   overflow: auto;
@@ -781,7 +798,7 @@ form input[type="file"] { font-size: 13px; margin-bottom: 8px; }
 }
 .help-table {
   width: 100%;
-  font-size: 12.5px;
+  font-size: 12px;
   border-collapse: collapse;
 }
 .help-table th, .help-table td {
@@ -822,7 +839,7 @@ form input[type="file"] { font-size: 13px; margin-bottom: 8px; }
   padding: 10px 14px;
   background: #fafbfc;
   border-radius: 6px;
-  font-size: 12.5px;
+  font-size: 12px;
   color: #5a6a7a;
   margin-bottom: 12px;
 }
@@ -860,7 +877,7 @@ form input[type="file"] { font-size: 13px; margin-bottom: 8px; }
   padding: 6px 10px;
   background: #fff8e6;
   border-left: 3px solid #f39c12;
-  font-size: 12.5px;
+  font-size: 12px;
   color: #8a6d3b;
   border-radius: 4px;
 }
@@ -891,7 +908,7 @@ form input[type="file"] { font-size: 13px; margin-bottom: 8px; }
   margin-bottom: 8px;
 }
 .ocr-env-title {
-  font-size: 13.5px;
+  font-size: 13px;
   font-weight: 600;
   color: #34495e;
 }
@@ -928,7 +945,7 @@ form input[type="file"] { font-size: 13px; margin-bottom: 8px; }
 .ocr-env-steps {
   margin: 8px 0 0 20px;
   padding: 0;
-  font-size: 12.5px;
+  font-size: 12px;
   line-height: 1.9;
 }
 .ocr-env-steps li { margin-bottom: 4px; }
@@ -946,7 +963,7 @@ form input[type="file"] { font-size: 13px; margin-bottom: 8px; }
   padding: 6px 10px;
   background: #ffefed;
   color: #c0392b;
-  font-size: 12.5px;
+  font-size: 12px;
   border-radius: 4px;
   word-break: break-all;
 }
@@ -1043,7 +1060,7 @@ form input[type="file"] { font-size: 13px; margin-bottom: 8px; }
   flex: 1;
   min-width: 90px;
   padding: 10px 14px;
-  font-size: 13.5px;
+  font-size: 13px;
   border-radius: 8px;
   cursor: pointer;
   transition: all .15s;
