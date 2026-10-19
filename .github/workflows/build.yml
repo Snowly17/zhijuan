@@ -25,14 +25,20 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements-dev.txt
 
+      - name: Install Inno Setup
+        run: choco install innosetup --no-progress -y
+
       - name: Compile check
         run: python -m py_compile app.py desktop.py parsers.py build.py i18n/__init__.py
 
       - name: Run tests
         run: pytest tests -q
 
-      - name: Build (onedir + onefile + portable zip)
+      - name: Build (onedir + portable zip + installer)
         run: python build.py --all
+
+      - name: Build single-file exe
+        run: python build.py --onefile --no-zip
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -40,6 +46,7 @@ jobs:
           name: zhijuan-windows-x64
           path: |
             dist/zhijuan-*-portable.zip
+            dist/installer/zhijuan-*-setup.exe
             dist/智卷.exe
           if-no-files-found: warn
 
@@ -49,5 +56,6 @@ jobs:
         with:
           files: |
             dist/zhijuan-*-portable.zip
+            dist/installer/zhijuan-*-setup.exe
             dist/智卷.exe
           generate_release_notes: true

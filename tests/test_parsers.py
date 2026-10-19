@@ -61,4 +61,4 @@ if __name__ == "__main__":
     test_inline_options()
     test_judge()
     test_trailing_answer()
-    print("全部通过 ✓")
+    print("all parser tests passed")
