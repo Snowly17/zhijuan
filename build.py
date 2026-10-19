@@ -202,6 +202,15 @@ def build(onefile=False, console=False):
     log(f"打包{'单文件' if onefile else '目录'}版（{'显示控制台' if console else '无控制台'}）")
     run(pyinstaller_args(onefile, console))
 
+    if onefile:
+        # GitHub Release 对中文文件名不友好（会被重命名成 default.exe），
+        # 所以单文件产物统一再复制一份 ASCII 名字用于发布
+        src = os.path.join(DIST_DIR, f"{APP_NAME}.exe")
+        dst = os.path.join(DIST_DIR, f"{APP_ID}-{VERSION}-win64-single.exe")
+        if os.path.exists(src):
+            shutil.copy2(src, dst)
+            print(f"[OK] 单文件版：{dst}（{os.path.getsize(dst) / 1024 / 1024:.1f} MB）")
+
 
 def make_zip():
     """把目录版压成便携包"""

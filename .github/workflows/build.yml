@@ -46,16 +46,25 @@ jobs:
           name: zhijuan-windows-x64
           path: |
             dist/zhijuan-*-portable.zip
+            dist/zhijuan-*-single.exe
             dist/installer/zhijuan-*-setup.exe
-            dist/智卷.exe
           if-no-files-found: warn
 
       - name: Attach to release
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
+          name: 智卷 ${{ github.ref_name }}
+          body: |
+            Windows 10/11 x64 桌面版。三种任选：
+
+            - `zhijuan-*-win64-setup.exe`：安装包，带开始菜单/桌面快捷方式（推荐）
+            - `zhijuan-*-win64-portable.zip`：便携版，解压即用，启动最快
+            - `zhijuan-*-win64-single.exe`：单文件版，适合放 U 盘
+
+            数据保存在 `%APPDATA%\智卷\quiz.db`，卸载重装不会丢失题库。
           files: |
             dist/zhijuan-*-portable.zip
+            dist/zhijuan-*-single.exe
             dist/installer/zhijuan-*-setup.exe
-            dist/智卷.exe
           generate_release_notes: true
