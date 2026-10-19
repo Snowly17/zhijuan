@@ -75,6 +75,18 @@ def log(msg):
     print(f"\n=== {msg} ===")
 
 
+def banner():
+    """开工先亮版本号：避免把本地默认 1.0.0 的包误当成发布版"""
+    print("=" * 56)
+    print(f"  智卷 构建   版本 {VERSION}")
+    print(f"  入口 {ENTRY}   产物目录 {DIST_DIR}/")
+    if VERSION == "1.0.0" and not os.environ.get("ZHIJUAN_VERSION") \
+            and not os.environ.get("GITHUB_REF_NAME"):
+        print("  提示：未从 tag 取到版本号，使用默认 1.0.0")
+        print("        本地想打正式版本可设 ZHIJUAN_VERSION=v1.0.2")
+    print("=" * 56)
+
+
 def run(cmd, **kwargs):
     print(">", " ".join(str(c) for c in cmd))
     subprocess.check_call(cmd, **kwargs)
@@ -325,6 +337,8 @@ def main():
 
     if not args.onefile and not args.installer and not args.all:
         args.all = False  # 默认：目录版 + zip
+
+    banner()
 
     built_dir = False
     if not args.onefile or args.all:
