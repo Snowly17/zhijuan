@@ -227,6 +227,31 @@ def build(onefile=False, console=False):
             print(f"[OK] 单文件版：{dst}（{os.path.getsize(dst) / 1024 / 1024:.1f} MB）")
 
 
+TEST_ARTIFACTS = ("data", "app.log", "crash.log", "selftest.txt", "window")
+
+
+def clean_output():
+    """产物目录里绝不能带测试残留（data/、app.log、selftest.txt …）。
+
+    上次就是 dist 里留了一个 data/，用户双击后程序把它当数据目录，
+    结果数据库打不开、Edge 也建不了 profile —— 这类"打包环境污染"必须清掉。
+    """
+    base = os.path.join(DIST_DIR, APP_NAME)
+    if not os.path.isdir(base):
+        return
+    for name in TEST_ARTIFACTS:
+        p = os.path.join(base, name)
+        try:
+            if os.path.isdir(p):
+                shutil.rmtree(p)
+                print(f"[OK] 清理测试残留目录 {p}")
+            elif os.path.exists(p):
+                os.remove(p)
+                print(f"[OK] 清理测试残留文件 {p}")
+        except Exception as e:
+            print(f"[WARN] 清理 {p} 失败：{e}")
+
+
 def make_zip():
     """把目录版压成便携包"""
     src = os.path.join(DIST_DIR, APP_NAME)
@@ -310,6 +335,7 @@ def main():
         build(onefile=True, console=args.console)
 
     if built_dir and not args.no_zip:
+        clean_output()
         make_zip()
 
     if args.installer or args.all:

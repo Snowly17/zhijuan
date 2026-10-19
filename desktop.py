@@ -54,6 +54,27 @@ def _find_browser():
     return None
 
 
+def _is_elevated():
+    """当前进程是否以管理员权限运行"""
+    try:
+        import ctypes
+        return bool(ctypes.windll.shell32.IsUserAnAdmin())
+    except Exception:
+        return False
+
+
+PROFILE_LOCKS = ("SingletonLock", "SingletonCookie", "SingletonSocket", "lockfile")
+
+
+def _clean_profile_locks(profile_dir):
+    """清掉上次异常退出留下的 profile 锁，否则新窗口只会是空白页"""
+    for name in PROFILE_LOCKS:
+        try:
+            os.remove(os.path.join(profile_dir, name))
+        except Exception:
+            pass
+
+
 def _run_app_window(url, profile_dir):
     """用 Edge/Chrome 的 --app 模式开一个无地址栏窗口，返回是否成功"""
     exe = _find_browser()
@@ -61,6 +82,7 @@ def _run_app_window(url, profile_dir):
         return False
     try:
         os.makedirs(profile_dir, exist_ok=True)
+        _clean_profile_locks(profile_dir)
         proc = subprocess.Popen([
             exe,
             f"--app={url}",
@@ -115,6 +137,12 @@ def run_desktop(url, port, server_runner, profile_dir=None):
         return "ok"
     except Exception as e:
         print(f"[WARN] pywebview 不可用（{e}），改用浏览器应用窗口")
+
+    if _is_elevated():
+        # 管理员权限下启动浏览器，会把管理员令牌传给 msedge/chrome：
+        # 用户之后再正常开浏览器就会看到"现有实例正在以提升的权限运行"。
+        print("[WARN] 检测到管理员权限，跳过浏览器应用窗口（避免污染用户的浏览器进程）")
+        return "elevated"
 
     profile = profile_dir or os.path.join(os.path.expanduser("~"), ".zhijuan-window")
     if _run_app_window(url, profile):

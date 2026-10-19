@@ -58,39 +58,78 @@ def get_resource_path(relative_path):
 
 
 def _dir_writable(path):
-    """真的写一个探针文件，别只信 makedirs 的返回值
+    """建 → 写 → 追加 → 删，四步全过才算可用。
 
-    Windows 上遇到过：目录存在、makedirs(exist_ok=True) 不报错，但进程没有写权限，
-    结果 SQLite 报 "unable to open database file"、日志也写不出来，问题很难查。
+    只测「能建」是不够的：SQLite 打开数据库要创建并删除 journal/WAL 文件，
+    目录只要「能建不能删」，就会在 init_db 阶段报 unable to open database file。
     """
+    probe = os.path.join(path, ".write-test")
     try:
         os.makedirs(path, exist_ok=True)
-        probe = os.path.join(path, ".write-test")
         with open(probe, "w", encoding="utf-8") as f:
             f.write("1")
+        with open(probe, "a", encoding="utf-8") as f:
+            f.write("2")
         os.remove(probe)
         return True
     except Exception:
         return False
 
 
-def get_data_dir():
-    """数据目录：优先系统标准位置，不可写时退到 exe 同级 data/"""
-    candidates = []
-    if sys.platform == "win32":
-        base = os.environ.get("APPDATA") or os.path.expanduser("~")
-        candidates.append(os.path.join(base, "智卷"))
-    elif sys.platform == "darwin":
-        candidates.append(os.path.expanduser("~/Library/Application Support/智卷"))
-    else:
-        candidates.append(os.path.expanduser("~/.local/share/智卷"))
+def data_dir_candidates():
+    """按优先级返回候选数据目录（只计算路径，不创建）
 
-    if getattr(sys, "frozen", False):
+    打包后顺序：%LOCALAPPDATA% → %APPDATA%（兼容老数据）→ exe 同级 data
+                → %TEMP% → 当前目录 data
+    绝不把「exe 同级」放前面：程序可能放在只读目录，也可能被别的进程改过权限。
+    """
+    candidates = []
+
+    if not getattr(sys, "frozen", False):
+        # 源码运行：沿用仓库里的 data/
+        candidates.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), "data"))
+    else:
+        local = os.environ.get("LOCALAPPDATA") or ""
+        roaming = os.environ.get("APPDATA") or ""
+        if sys.platform == "win32":
+            if local:
+                candidates.append(os.path.join(local, "智卷"))
+            if roaming:
+                candidates.append(os.path.join(roaming, "智卷"))
+        elif sys.platform == "darwin":
+            candidates.append(os.path.expanduser("~/Library/Application Support/智卷"))
+        else:
+            candidates.append(os.path.expanduser("~/.local/share/智卷"))
+
         try:
             candidates.append(os.path.join(os.path.dirname(sys.executable), "data"))
         except Exception:
             pass
+
+    tmp = os.environ.get("TEMP") or os.environ.get("TMP")
+    if tmp:
+        candidates.append(os.path.join(tmp, "智卷"))
     candidates.append(os.path.join(os.getcwd(), "data"))
+
+    seen, ordered = set(), []
+    for c in candidates:
+        if c and c not in seen:
+            seen.add(c)
+            ordered.append(c)
+    return ordered
+
+
+def get_data_dir():
+    """选一个真正可用的数据目录
+
+    规则：已有 quiz.db 的目录优先（避免升级后「题库突然空了」），
+          其次按 data_dir_candidates() 的顺序找第一个可写的。
+    """
+    candidates = data_dir_candidates()
+
+    for path in candidates:
+        if os.path.exists(os.path.join(path, "quiz.db")) and _dir_writable(path):
+            return path
 
     for path in candidates:
         if _dir_writable(path):
@@ -145,9 +184,7 @@ def close_db(exc):
         db.close()
 
 
-def init_db():
-    conn = sqlite3.connect(DB_PATH)
-    conn.executescript("""
+SCHEMA_SQL = """
     CREATE TABLE IF NOT EXISTS questions (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         type TEXT NOT NULL,
@@ -186,13 +223,46 @@ def init_db():
         repetitions INTEGER DEFAULT 0,
         next_review TEXT
     );
-    """)
+"""
 
-    # 自动迁移：为旧数据库补 SM-2 字段
-    _auto_migrate(conn)
 
-    conn.commit()
-    conn.close()
+def _init_db_at(path):
+    """在指定目录建库，返回实际使用的数据库路径"""
+    os.makedirs(path, exist_ok=True)
+    db_file = os.path.join(path, "quiz.db")
+    conn = sqlite3.connect(db_file, timeout=20)
+    try:
+        conn.executescript(SCHEMA_SQL)
+        _auto_migrate(conn)
+        conn.commit()
+    finally:
+        conn.close()
+    return db_file
+
+
+def init_db():
+    """初始化数据库；某个候选目录不可用（只读/被锁/权限异常）就自动换下一个。
+
+    以前这里直接崩，用户只会看到一个 traceback；现在要么成功，要么给出
+    「试过哪些路径、分别错在哪」的可读信息。
+    """
+    global DB_PATH
+    tried = []
+    for path in data_dir_candidates():
+        try:
+            db_file = _init_db_at(path)
+        except Exception as e:
+            tried.append(f"  {os.path.join(path, 'quiz.db')}\n      -> {type(e).__name__}: {e}")
+            continue
+        DB_PATH = db_file
+        print(f"[OK] 数据库：{db_file}")
+        return
+
+    raise RuntimeError(
+        "无法初始化数据库，以下位置都不可用：\n" + "\n".join(tried) +
+        "\n\n建议：把程序解压到有写入权限的目录（例如 D:\\zhijuan），"
+        "或右键以普通用户身份运行，不要放在 Program Files / 只读盘里。"
+    )
 
 
 def _auto_migrate(conn):
@@ -1568,6 +1638,7 @@ def export_reading_word(sid):
 
 # ==================== 启动 ====================
 LOG_PATH = None
+LOG_TRIED = []          # 每条候选日志路径的失败原因，崩溃时一起展示
 
 
 def _pick_port(preferred=5001, tries=20):
@@ -1587,27 +1658,28 @@ def _pick_port(preferred=5001, tries=20):
 def _setup_log_file():
     """打包成窗口程序后没有控制台：把 stdout/stderr 落到日志文件。
 
-    注意：日志路径必须多准备几个兜底（数据目录 → exe 所在目录 → 系统临时目录），
-    否则一旦第一个路径不可写，所有 print 都会消失，线上问题无从排查。
+    日志路径必须多级兜底，并且把「每个候选为什么失败」记下来 —— 否则一旦
+    全线失败，用户只会看到「日志: None」，线上问题无从排查。
     """
     global LOG_PATH
     if not getattr(sys, "frozen", False):
         return
 
-    candidates = [os.path.join(get_data_dir(), "app.log")]
-    try:
-        candidates.append(os.path.join(os.path.dirname(sys.executable), "app.log"))
-    except Exception:
-        pass
-    candidates.append(os.path.join(os.environ.get("TEMP") or ".", "zhijuan-app.log"))
+    candidates = []
+    for d in data_dir_candidates():
+        candidates.append(os.path.join(d, "app.log"))
+    tmp = os.environ.get("TEMP") or os.environ.get("TMP") or "."
+    candidates.append(os.path.join(tmp, "zhijuan-app.log"))
 
     stream = None
     for path in candidates:
         try:
+            os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
             stream = open(path, "a", encoding="utf-8", errors="replace", buffering=1)
             LOG_PATH = path
             break
-        except Exception:
+        except Exception as e:
+            LOG_TRIED.append(f"  {path}\n      -> {type(e).__name__}: {e}")
             continue
     if stream is None:
         try:
@@ -1656,7 +1728,7 @@ def print_banner(url):
     print("   智卷 · 智能题库系统")
     print("   ────────────────────────")
     print(f"   地址：{url}")
-    print("   数据目录：", get_data_dir())
+    print("   数据库：", DB_PATH)
     print("=" * 50)
 
     try:
@@ -1677,6 +1749,18 @@ def run_server(port):
     app.run(host="127.0.0.1", port=port, debug=False, use_reloader=False, threaded=True)
 
 
+def get_window_profile_dir():
+    """浏览器应用窗口（Edge/Chrome --app）专用的独立 profile 目录。
+
+    不能放在数据目录里：
+      ① 数据目录可能被设成只读/被同步盘占用，Edge 建不了 profile 就只会开个空白窗口；
+      ② 以管理员身份跑过一次后，profile 会被管理员进程占住，普通权限再开就锁冲突。
+    """
+    base = (os.environ.get("LOCALAPPDATA") or os.environ.get("APPDATA")
+            or os.path.expanduser("~"))
+    return os.path.join(base, "智卷", "window-profile")
+
+
 def main(argv=None):
     args = list(sys.argv[1:] if argv is None else argv)
     _setup_log_file()
@@ -1694,7 +1778,7 @@ def main(argv=None):
             from desktop import run_desktop
             status = run_desktop(
                 url, port, run_server,
-                profile_dir=os.path.join(get_data_dir(), "window"),
+                profile_dir=get_window_profile_dir(),
             )
         except Exception as e:
             print(f"[WARN] 桌面窗口启动失败：{e}")
@@ -1702,9 +1786,20 @@ def main(argv=None):
 
         if status == "ok":
             return 0
-        if status == "degraded":
-            # 窗口挂了，但服务已在后台线程跑起来了：退化成浏览器模式
-            open_in_browser(url, delay=0)
+        if status in ("degraded", "elevated"):
+            # 服务已在后台线程跑起来了：退化成浏览器
+            if status == "elevated":
+                # 管理员权限下不要直接 Popen 浏览器（会把管理员令牌传下去，
+                # 用户的 Edge 之后就会一直提示"现有实例正在以提升的权限运行"）。
+                # explorer.exe 以普通权限运行，由它去拉默认浏览器。
+                print("[WARN] 当前是管理员权限，改由 explorer 以普通权限打开默认浏览器")
+                try:
+                    import subprocess as _sp
+                    _sp.Popen(["explorer.exe", url])
+                except Exception:
+                    open_in_browser(url, delay=0)
+            else:
+                open_in_browser(url, delay=0)
             threading.Event().wait()
             return 0
         print("[WARN] 桌面窗口不可用，回退到浏览器模式")
