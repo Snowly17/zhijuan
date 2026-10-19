@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="{{ lang_tag }}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ t('app.name') }} · {{ t('app.tagline') }}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+<!-- 👇 PWA 新增开始 👇 -->
+<link rel="manifest" href="{{ url_for('pwa_manifest') }}">
+<meta name="theme-color" content="#1a73e8">
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/static/sw.js');
+    });
+  }
+</script>
+<!-- 👆 PWA 新增结束 👆 -->
+
+</head>
+<body>
+<div class="container">
+  <header class="site-header">
+    <div class="header-top">
+      <div class="brand">
+        <div class="brand-logo">
+          <span class="logo-block green"></span><span class="logo-block blue"></span>
+          <span class="logo-block red"></span><span class="logo-block yellow"></span>
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">{{ t('app.name') }}</span>
+          <span class="brand-tagline">· {{ t('app.tagline') }}</span>
+        </div>
+      </div>
+      {% include "_lang_switcher.html" %}
+    </div>
+
+    <nav class="main-nav">
+      <a href="/" class="active">{{ t('nav.home') }}</a>
+      <a href="/market">{{ t('nav.market') }}</a>
+      <a href="/review">
+        {{ t('nav.review') }}
+        {% if review_count %}<span class="badge">{{ review_count }}</span>{% endif %}
+      </a>
+      <a href="/wrong">
+        {{ t('nav.wrong_book') }}
+        {% if wrong_count %}<span class="badge">{{ wrong_count }}</span>{% endif %}
+      </a>
+      <a href="/dashboard">{{ t('nav.dashboard') }}</a>
+      <a href="/convert">{{ t('nav.convert') }}</a>
+      <a href="/privacy">{{ t('nav.privacy') }}</a>
+    </nav>
+  </header>
+
+  <section class="panel">
+    <h2>① {{ t('home.upload_title') }}</h2>
+    <p class="hint">
+      {{ t('home.upload_hint') }}
+      <code>single</code>{{ t('type.single') }} ·
+      <code>multiple</code>{{ t('type.multiple') }} ·
+      <code>judge</code>{{ t('type.judge') }} ·
+      <code>blank</code>{{ t('type.blank') }} ·
+      <code>short</code>{{ t('type.short') }}
+    </p>
+    <form id="uploadForm" enctype="multipart/form-data">
+      <input type="file" name="file" accept=".json,.csv" required>
+      <label class="checkbox">
+        <input type="checkbox" name="replace" value="1"> {{ t('home.replace_bank') }}
+      </label>
+      <button type="submit" class="btn-primary">{{ t('home.upload_btn') }}</button>
+    </form>
+    <p id="uploadMsg" class="msg"></p>
+  </section>
+
+  <section class="panel">
+    <h2>② {{ t('home.generate_title') }}</h2>
+    <p class="hint">
+      {{ t('home.bank_size', n=qcount) }}{{ t('home.auto_split_tip') }}
+    </p>
+    <div class="stat-tip">
+      {{ t('home.stat_tip')|safe }}
+    </div>
+    <form id="genForm">
+      <label>{{ t('home.generate_prefix') }}
+        <input type="text" name="name" value="{{ t('home.default_paper_name') }}" maxlength="20">
+      </label>
+      <label>{{ t('home.generate_size') }}
+        <input type="number" name="per_paper" value="20" min="1" max="200">
+      </label>
+      <button type="submit" class="btn-primary" {% if not qcount %}disabled{% endif %}>
+        {{ t('home.generate_btn') }}
+      </button>
+    </form>
+    <p id="genMsg" class="msg"></p>
+  </section>
+
+  <section class="panel">
+  <h2 style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+    ③ {{ t('home.papers_title') }}
+    {% if papers %}
+    <div class="list-toolbar">
+      <button type="button" id="btnSelectAll" class="btn-tool">{{ t('common.select_all') }}</button>
+      <button type="button" id="btnSelectInvert" class="btn-tool">{{ t('common.select_invert') }}</button>
+      <button type="button" id="btnSelectNone" class="btn-tool">{{ t('common.select_none') }}</button>
+      <button type="button" id="btnDeleteSelected" class="btn-danger" disabled>
+        {{ t('common.delete_selected') }} (<span id="selCount">0</span>)
+      </button>
+    </div>
+    {% endif %}
+  </h2>
+
+  {% if papers %}
+  <div class="range-delete">
+    <span class="range-title">{{ t('common.by_range') }}</span>
+    <input type="text" id="rangePrefix" class="range-input"
+           placeholder="{{ t('common.prefix_ph') }}">
+    <span class="range-text">{{ t('common.from_vol') }}</span>
+    <input type="number" id="rangeStart" class="range-input-sm" min="1" value="1">
+    <span class="range-text">{{ t('common.to_vol') }}</span>
+    <input type="number" id="rangeEnd" class="range-input-sm" min="1" value="10">
+    <span class="range-text">{{ t('common.vol') }}</span>
+    <button type="button" id="btnDeleteRange" class="btn-danger btn-sm">
+      {{ t('common.delete_range') }}
+    </button>
+    <span class="range-hint" id="rangePreview"></span>
+  </div>
+
+  <ul class="paper-list" id="paperList">
+    {% for p in papers %}
+    <li class="paper-item" data-pid="{{ p.id }}" data-name="{{ p.name }}">
+      <label class="paper-check-wrap">
+        <input type="checkbox" class="paper-checkbox" value="{{ p.id }}">
+      </label>
+      <div class="paper-info">
+        <div class="paper-name">{{ p.name }}</div>
+        <div class="paper-meta">
+          {{ t('home.paper_meta', qcount=p.qcount, total='%.1f'|format(p.total_score), date=p.created_at) }}
+        </div>
+      </div>
+      <div class="paper-actions">
+        <a class="btn-primary" href="{{ url_for('paper_page', pid=p.id) }}">{{ t('home.start_exam') }}</a>
+        <button type="button" class="btn-delete-paper" data-pid="{{ p.id }}">{{ t('home.del_paper') }}</button>
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="empty-tip">{{ t('home.papers_empty') }}</p>
+  {% endif %}
+</section>
+
+  <footer class="brand-footer">
+    {{ t('app.footer') }}
+  </footer>
+</div>
+
+<script>
+window.I18N_APP = {
+  no_match: {{ t('js.no_match')|tojson }},
+  confirm_batch_del: {{ t('js.confirm_batch_del')|tojson }},
+  del_fail: {{ t('js.del_fail')|tojson }},
+  uploading: {{ t('js.uploading')|tojson }},
+  upload_fail: {{ t('js.upload_fail')|tojson }},
+  upload_ok: {{ t('js.upload_ok')|tojson }},
+  generating: {{ t('js.generating')|tojson }},
+  gen_fail: {{ t('js.gen_fail')|tojson }},
+  gen_ok: {{ t('js.gen_ok')|tojson }},
+  invalid_range: {{ t('js.invalid_range')|tojson }},
+  range_error: {{ t('js.range_error')|tojson }},
+  confirm_del_paper: {{ t('js.confirm_del_paper')|tojson }},
+  match_count: {{ t('js.match_count')|tojson }},
+  no_match_range: {{ t('js.no_match_range')|tojson }},
+  selected: {{ t('js.selected')|tojson }},
+};
+</script>
+
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

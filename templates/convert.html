@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="{{ lang_tag }}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ t('convert.title') }} · {{ t('app.name') }}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container container-wide">
+  <div class="global-tip">
+    <b>{{ t('convert.tip_title') }}</b>
+    <ul style="margin-top: 8px; margin-bottom: 0; padding-left: 20px; font-size: 13.5px; line-height: 1.8;">
+      <li>{{ t('convert.tip_1') }}</li>
+      <li>{{ t('convert.tip_2') }}</li>
+      <li>{{ t('convert.tip_3') }}</li>
+    </ul>
+  </div>
+
+  <header class="site-header">
+    <div class="header-top">
+      <div class="brand">
+        <div class="brand-logo">
+          <span class="logo-block green"></span><span class="logo-block blue"></span>
+          <span class="logo-block red"></span><span class="logo-block yellow"></span>
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">{{ t('app.name') }}</span>
+          <span class="brand-tagline">· {{ t('convert.title') }}</span>
+        </div>
+      </div>
+      {% include "_lang_switcher.html" %}
+    </div>
+    <nav class="main-nav">
+      <a href="/">← {{ t('common.back_home') }}</a>
+    </nav>
+  </header>
+
+  <section class="panel">
+    <h2>① {{ t('convert.upload_title') }}</h2>
+
+    <form id="convertForm">
+      <!-- 1. 公共上传区 -->
+      <div class="upload-zone">
+        <input type="file" name="file" accept=".docx,.pdf,.json,.csv" required>
+        <label class="ocr-toggle"><input type="checkbox" id="useOcr"> {{ t('convert.ocr_toggle') }}</label>
+      </div>
+
+      <!-- 2. 标准解析区 -->
+      <div class="action-group standard-group">
+        <div class="group-title">{{ t('convert.standard_title') }}</div>
+        <div class="group-buttons">
+          <button type="submit" class="btn-primary">{{ t('convert.btn_parse') }}</button>
+          <button type="button" id="btnDebug" class="btn-cancel">{{ t('convert.btn_debug') }}</button>
+          <button type="button" id="btnAiParse" class="btn-primary" style="background: #8e44ad;">
+            {{ t('convert.btn_ai') }}
+          </button>
+        </div>
+      </div>
+
+      <!-- 3. AI 教研引擎区 -->
+      <div class="action-group ai-group">
+        <div class="group-title">
+            {{ t('convert.ai_section_title') }}
+            <span class="ai-badge">{{ t('convert.ai_badge') }}</span>
+            <span id="aiStatus" style="font-size:12px; margin-left:10px; color:#888;">{{ t('ollama.checking') }}</span>
+        </div>
+
+        <!-- 👇 未连接警告横幅 👇 -->
+        <div id="ollamaWarning" style="display:none; background:#ffefed; border:1px solid #f5c6cb; color:#c0392b; padding:10px; border-radius:6px; font-size:13px; margin-bottom:15px;">
+          {{ t('convert.ollama_banner')|safe }}
+        </div>
+
+        <div class="ai-config-panel">
+          <label>
+            {{ t('convert.ai_subject') }}
+            <select id="aiSubject" class="config-select">
+              <option value="auto">{{ t('convert.ai_subject_auto') }}</option>
+              <option value="zh">{{ t('convert.ai_subject_cn') }}</option>
+              <option value="en">{{ t('convert.ai_subject_en') }}</option>
+              <option value="other">{{ t('convert.ai_subject_other') }}</option>
+            </select>
+          </label>
+
+          <label>
+            {{ t('convert.ai_mode') }}
+            <select id="aiMode" class="config-select">
+              <option value="reading">{{ t('convert.ai_mode_reading') }}</option>
+              <option value="cloze">{{ t('convert.ai_mode_cloze') }}</option>
+              <option value="short">{{ t('convert.ai_mode_short') }}</option>
+            </select>
+          </label>
+
+          <label>
+            {{ t('convert.ai_difficulty') }}
+            <select id="aiDifficulty" class="config-select">
+              <option value="easy">{{ t('convert.ai_diff_easy') }}</option>
+              <option value="normal" selected>{{ t('convert.ai_diff_normal') }}</option>
+              <option value="hard">{{ t('convert.ai_diff_hard') }}</option>
+            </select>
+          </label>
+
+        <label>
+            {{ t('convert.ai_count') }}
+            <input type="number" id="aiQuestionCount" class="config-select" value="4" min="1" max="20">
+        </label>
+
+        </div>
+
+        <div class="group-buttons" style="margin-top: 15px;">
+          <button type="button" id="btnGenerateAiPaper" class="btn-primary btn-ai">
+            {{ t('convert.ai_paper_btn') }}
+          </button>
+        </div>
+      </div>
+    </form>
+
+    <p id="convertMsg" class="msg"></p>
+
+    <div class="ocr-env" id="ocrEnvBox">
+      <div class="ocr-env-header">
+        <span class="ocr-env-title">🖼️ {{ t('convert.ocr_title') }}</span>
+        <span class="ocr-env-status" id="ocrEnvStatus">{{ t('convert.ocr_checking') }}</span>
+      </div>
+      <div class="ocr-env-body" id="ocrEnvBody"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="helpPanel">
+    <h2>{{ t('convert.help_title') }}</h2>
+    <div class="help-grid">
+      <div class="help-block help-principle">
+        <h3>{{ t('convert.help_principle_title') }}</h3>
+        <ol class="help-list">
+          <li><b>{{ t('convert.help_principle_1') }}</b></li>
+          <li><b>{{ t('convert.help_principle_2') }}</b></li>
+          <li><b>{{ t('convert.help_principle_3') }}</b></li>
+        </ol>
+      </div>
+      <div class="help-block">
+        <h3>{{ t('convert.help_format_title') }}</h3>
+        <ul class="help-list">
+          <li><b>.docx</b> —— {{ t('convert.help_format_1') }}</li>
+          <li><b>.json / .csv</b> —— {{ t('convert.help_format_2') }}</li>
+          <li><b>.pdf</b> —— {{ t('convert.help_format_3') }}</li>
+        </ul>
+      </div>
+      <div class="help-block">
+        <h3>{{ t('convert.help_faq_title') }}</h3>
+        <ul class="help-list">
+          <li>{{ t('convert.help_faq_1') }}</li>
+          <li>{{ t('convert.help_faq_2') }}</li>
+          <li>{{ t('convert.help_faq_3') }}</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <div id="splitLayout" class="split-layout" hidden>
+    <section class="panel split-left" id="debugPanel">
+      <div class="split-header"><h2>📄 {{ t('convert.raw_title') }}</h2><span class="split-badge" id="debugBadge">—</span></div>
+      <p class="hint" id="debugSummary">{{ t('convert.raw_not_parsed') }}</p>
+      <div class="raw-text-wrap" id="rawTextWrap"><pre id="rawTextPre" class="raw-text"></pre></div>
+    </section>
+
+    <section class="panel split-right" id="previewPanel">
+      <div class="split-header"><h2>✏️ {{ t('convert.preview_title') }}</h2><span class="split-badge" id="previewBadge">—</span></div>
+      <p class="hint" id="previewSummary">{{ t('convert.raw_not_parsed') }}</p>
+      <div class="check-tips">
+        <b>{{ t('convert.check_title') }}</b><br>
+        <span>{{ t('convert.check_1') }}</span> <span>{{ t('convert.check_2') }}</span>
+        <span>{{ t('convert.check_3') }}</span> <span>{{ t('convert.check_4') }}</span>
+      </div>
+      <div id="previewList" class="preview-list"></div>
+      <div id="pager" class="pager"></div>
+      <div class="convert-actions">
+        <label class="checkbox"><input type="checkbox" id="replaceExisting"> {{ t('convert.replace') }}</label>
+        <button id="btnImport" class="btn-primary btn-lg">{{ t('convert.import_btn') }}</button>
+      </div>
+      <p id="importMsg" class="msg"></p>
+    </section>
+  </div>
+</div>
+
+<!-- ==============================================
+     👇 核心修复：将多语言变量挂载在 data-* 属性中 👇
+     这能让 VSCode 完全不报错，同时完美解析所有特殊字符
+     ============================================== -->
+<div id="i18n-data" hidden
+  data-single="{{ t('type.single') }}"
+  data-multiple="{{ t('type.multiple') }}"
+  data-judge="{{ t('type.judge') }}"
+  data-blank="{{ t('type.blank') }}"
+  data-short="{{ t('type.short') }}"
+  data-loading="{{ t('convert.loading') }}"
+  data-select-file-first="{{ t('convert.select_file_first') }}"
+  data-load-fail="{{ t('convert.load_fail') }}"
+  data-summary="{{ t('convert.summary') }}"
+  data-del-q="{{ t('convert.del_q') }}"
+  data-confirm-del-q="{{ t('convert.confirm_del_q') }}"
+  data-answer="{{ t('convert.answer') }}"
+  data-ans-ph="{{ t('convert.ans_ph') }}"
+  data-analysis="{{ t('convert.analysis') }}"
+  data-raw-empty="{{ t('convert.raw_empty') }}"
+  data-raw-sum="{{ t('convert.raw_sum') }}"
+  data-raw-ocr="{{ t('convert.raw_ocr_tag') }}"
+  data-parsing="{{ t('convert.parsing') }}"
+  data-parse-fail="{{ t('convert.parse_fail') }}"
+  data-parse-zero="{{ t('convert.parse_zero') }}"
+  data-parse-ok="{{ t('convert.parse_ok') }}"
+  data-miss-alert="{{ t('convert.missing_alert') }}"
+  data-miss-reason="{{ t('convert.missing_reason') }}"
+  data-miss-how="{{ t('convert.missing_how') }}"
+  data-miss-1="{{ t('convert.missing_1') }}"
+  data-miss-2="{{ t('convert.missing_2') }}"
+  data-miss-3="{{ t('convert.missing_3') }}"
+  data-miss-4="{{ t('convert.missing_4') }}"
+  data-no-missing="{{ t('convert.no_missing') }}"
+  data-confirm-import="{{ t('convert.confirm_import') }}"
+  data-importing="{{ t('convert.importing') }}"
+  data-import-ok="{{ t('convert.import_ok') }}"
+  data-btn-single="{{ t('convert.btn_single_col') }}"
+  data-btn-double="{{ t('convert.btn_double_col') }}"
+  data-ocr-ready="{{ t('convert.ocr_ready') }}"
+  data-ocr-warn="{{ t('convert.ocr_warn') }}"
+  data-ocr-err="{{ t('convert.ocr_err') }}"
+  data-ocr-ok-msg="{{ t('convert.ocr_ok_msg') }}"
+  data-ocr-warn-msg="{{ t('convert.ocr_warn_msg') }}"
+  data-ocr-steps="{{ t('convert.ocr_steps_title') }}"
+  data-ocr-err-msg="{{ t('convert.ocr_err_msg') }}"
+  data-ocr-s1="{{ t('convert.ocr_step_1') }}"
+  data-ocr-s2="{{ t('convert.ocr_step_2') }}"
+  data-ocr-s3="{{ t('convert.ocr_step_3') }}"
+  data-ocr-s4="{{ t('convert.ocr_step_4') }}"
+  data-ocr-s5="{{ t('convert.ocr_step_5') }}"
+  data-ocr-s6="{{ t('convert.ocr_step_6') }}"
+  data-common-prev="{{ t('common.prev') }}"
+  data-common-next="{{ t('common.next') }}"
+  data-btn-ai="{{ t('convert.btn_ai') }}"
+  data-raw-title="{{ t('convert.raw_title') }}"
+  data-preview-title="{{ t('convert.preview_title') }}"
+  data-ai-select="{{ t('convert.ai_select') }}"
+  data-ai-confirm="{{ t('convert.ai_confirm') }}"
+  data-ai-running="{{ t('convert.ai_running') }}"
+  data-ai-fail="{{ t('convert.ai_fail') }}"
+  data-ai-timeout="{{ t('convert.ai_timeout') }}"
+  data-reading-gen-confirm="{{ t('reading.gen_confirm') }}"
+  data-reading-gen-running="{{ t('reading.gen_running') }}"
+  data-reading-gen-ok="{{ t('reading.gen_ok') }}"
+  data-ollama-fail="{{ t('ollama.fail') }}"
+  data-raw-more="{{ t('convert.raw_more') }}"
+  data-truncated="{{ t('convert.truncated') }}"
+  data-btn-parsing="{{ t('convert.btn_parsing') }}"
+  data-btn-ai-parsing="{{ t('convert.btn_ai_parsing') }}"
+  data-btn-generating="{{ t('convert.btn_generating') }}"
+  data-timeout="{{ t('convert.timeout') }}"
+  data-net-error="{{ t('convert.net_error') }}"
+  data-stream-done="{{ t('convert.stream_done') }}"
+  data-stream-error="{{ t('convert.stream_error') }}"
+  data-stream-lost="{{ t('convert.stream_lost') }}"
+></div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  // 1. 读取安全注入的 DOM 数据
+  const d = document.getElementById("i18n-data").dataset;
+
+  // 2. 重新组装 I18N 对象
+  const I18N = {
+    type_labels: {
+      single: d.single, multiple: d.multiple, judge: d.judge, blank: d.blank, short: d.short
+    },
+    loading: d.loading, select_file_first: d.selectFileFirst, load_fail: d.loadFail, summary: d.summary,
+    del_q: d.delQ, confirm_del_q: d.confirmDelQ, answer: d.answer, ans_ph: d.ansPh, analysis: d.analysis,
+    raw_empty: d.rawEmpty, raw_sum: d.rawSum, raw_ocr: d.rawOcr, parsing: d.parsing,
+    parse_fail: d.parseFail, parse_zero: d.parseZero, parse_ok: d.parseOk,
+    miss_alert: d.missAlert, miss_reason: d.missReason, miss_how: d.missHow,
+    miss_1: d.miss1, miss_2: d.miss2, miss_3: d.miss3, miss_4: d.miss4, no_missing: d.noMissing,
+    confirm_import: d.confirmImport, importing: d.importing, import_ok: d.importOk,
+    btn_single: d.btnSingle, btn_double: d.btnDouble,
+    ocr_ready: d.ocrReady, ocr_warn: d.ocrWarn, ocr_err: d.ocrErr, ocr_ok_msg: d.ocrOkMsg, ocr_warn_msg: d.ocrWarnMsg,
+    ocr_steps: d.ocrSteps, ocr_err_msg: d.ocrErrMsg, ocr_s1: d.ocrS1, ocr_s2: d.ocrS2, ocr_s3: d.ocrS3, ocr_s4: d.ocrS4, ocr_s5: d.ocrS5, ocr_s6: d.ocrS6,
+    common_prev: d.commonPrev, common_next: d.commonNext, btn_ai: d.btnAi, raw_title: d.rawTitle, preview_title: d.previewTitle,
+    ai_select: d.aiSelect, ai_confirm: d.aiConfirm, ai_running: d.aiRunning, ai_fail: d.aiFail, ai_timeout: d.aiTimeout,
+    reading_gen_confirm: d.readingGenConfirm, reading_gen_running: d.readingGenRunning, reading_gen_ok: d.readingGenOk,
+    ollama_fail: d.ollamaFail, raw_more: d.rawMore, truncated: d.truncated,
+    btn_parsing: d.btnParsing, btn_ai_parsing: d.btnAiParsing, btn_generating: d.btnGenerating,
+    timeout: d.timeout, net_error: d.netError,
+    stream_done: d.streamDone, stream_error: d.streamError, stream_lost: d.streamLost
+  };
+
+  const $ = (s) => document.querySelector(s);
+  const PAGE_SIZE = 50;
+  let currentSid = null, currentPage = 1, totalPages = 1, totalCount = 0;
+
+  function escapeHtml(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+  function answerToString(a) {
+    if (Array.isArray(a)) return a.join(",");
+    return a == null ? "" : String(a);
+  }
+
+  async function checkOcrEnv() {
+    const status = document.getElementById("ocrEnvStatus");
+    const body = document.getElementById("ocrEnvBody");
+    if (!status || !body) return;
+    try {
+      const res = await fetch("/api/check_env");
+      const data = await res.json();
+      if (data.pytesseract && data.tesseract_binary && data.chi_sim) {
+        status.textContent = I18N.ocr_ready; status.className = "ocr-env-status ok";
+        body.innerHTML = `<p class="ocr-env-ok">${I18N.ocr_ok_msg}</p>`;
+        return;
+      }
+      status.textContent = I18N.ocr_warn; status.className = "ocr-env-status warn";
+      body.innerHTML = `
+        <p class="ocr-env-warn">${I18N.ocr_warn_msg}</p>
+        <details class="ocr-env-guide">
+          <summary>${I18N.ocr_steps}</summary>
+          <ol class="ocr-env-steps">
+            <li>${I18N.ocr_s1} <a href="https://github.com/UB-Mannheim/tesseract/wiki" target="_blank">github.com/UB-Mannheim/tesseract/wiki</a></li>
+            <li>${I18N.ocr_s2}</li><li>${I18N.ocr_s3}</li><li>${I18N.ocr_s4}</li><li>${I18N.ocr_s5}</li><li>${I18N.ocr_s6}</li>
+          </ol>
+          <p class="ocr-env-msg">${I18N.ocr_err_msg.replace("{msg}", data.message || "Unknown")}</p>
+        </details>`;
+    } catch (e) {
+      status.textContent = I18N.ocr_err; status.className = "ocr-env-status err";
+      body.innerHTML = `<p class="ocr-env-warn">${I18N.ocr_err_msg.replace("{msg}", e)}</p>`;
+    }
+  }
+
+  async function checkOllamaEnv() {
+    const status = document.getElementById("aiStatus");
+    const warning = document.getElementById("ollamaWarning"); // 修复：获取警告元素
+    if (!status) return;
+    try {
+      const res = await fetch("/api/check_ollama");
+      const data = await res.json();
+      status.textContent = data.msg;
+      status.style.color = data.ok ? "#27ae60" : "#c0392b";
+
+      if (!data.ok && warning) {
+        warning.style.display = "block";
+      } else if (data.ok && warning) {
+        warning.style.display = "none";
+      }
+    } catch (e) {
+      status.textContent = I18N.ollama_fail;
+      status.style.color = "#c0392b";
+      if (warning) warning.style.display = "block";
+    }
+  }
+
+  function renderRawText(lines) {
+    const pre = $("#rawTextPre");
+    if (!pre) return;
+    pre.innerHTML = "";
+    if (!lines || !lines.length) { pre.textContent = I18N.raw_empty; return; }
+
+    const maxRender = 500;
+    const renderLines = lines.slice(0, maxRender);
+    const frag = document.createDocumentFragment();
+    renderLines.forEach((line, i) => {
+      const div = document.createElement("div");
+      div.className = "raw-line";
+      div.innerHTML = `<span class="line-no">${i + 1}</span><span class="line-text">${escapeHtml(line) || "&nbsp;"}</span>`;
+      frag.appendChild(div);
+    });
+
+    if (lines.length > maxRender) {
+       const moreTip = document.createElement("div");
+       moreTip.style.padding = "10px";
+       moreTip.style.color = "#8892a0";
+       moreTip.textContent = I18N.raw_more.replace("{n}", lines.length - maxRender);
+       frag.appendChild(moreTip);
+    }
+    pre.appendChild(frag);
+    const wrap = $("#rawTextWrap");
+    if (wrap) wrap.scrollTop = 0;
+  }
+
+  async function fetchRawText(sid = null) {
+    let res;
+    if (sid) {
+      res = await fetch(`/api/parse_raw/${sid}`);
+    } else {
+      const fileInput = document.querySelector("#convertForm input[type=file]");
+      if (!fileInput.files.length) return;
+      const form = new FormData();
+      form.append("file", fileInput.files[0]);
+      if ($("#useOcr").checked) form.append("ocr", "1");
+      res = await fetch("/api/parse_debug", { method: "POST", body: form });
+    }
+
+    try {
+      const data = await res.json();
+      if (!data.ok) {
+        const sum = $("#debugSummary");
+        if (sum) sum.textContent = "✗ " + (data.msg || I18N.load_fail);
+        return;
+      }
+      if ($("#debugBadge")) $("#debugBadge").textContent = data.total_lines;
+      if ($("#debugSummary")) $("#debugSummary").textContent = I18N.raw_sum.replace("{n}", data.total_lines).replace("{ocr}", data.ocr ? I18N.raw_ocr : "");
+      renderRawText(data.all_lines || data.first_60 || []);
+    } catch (e) {
+      if ($("#debugSummary")) $("#debugSummary").textContent = "✗ " + e;
+    }
+  }
+
+  async function loadPage(page) {
+    if (!currentSid) return;
+    currentPage = page;
+    const list = $("#previewList");
+    if (!list) return;
+    list.innerHTML = `<p class="empty-tip">${I18N.loading}</p>`;
+    const res = await fetch(`/api/parse_page/${currentSid}?page=${page}&size=${PAGE_SIZE}`);
+    const data = await res.json();
+    if (!data.ok) { list.innerHTML = `<p class="empty-tip">${data.msg || I18N.load_fail}</p>`; return; }
+    totalPages = data.pages; totalCount = data.total;
+    list.innerHTML = "";
+    data.questions.forEach((q, i) => { if (q) list.appendChild(renderQuestion(q, data.start_index + i)); });
+    renderPager();
+    if ($("#previewBadge")) $("#previewBadge").textContent = totalCount;
+    if ($("#previewSummary")) $("#previewSummary").textContent = I18N.summary.replace("{n}", totalCount).replace("{size}", PAGE_SIZE).replace("{page}", currentPage).replace("{pages}", totalPages);
+  }
+
+  function renderQuestion(q, idx) {
+    const div = document.createElement("div");
+    div.className = "preview-item";
+    const optionsHtml = (q.options || []).map((o, j) => `<li>${"ABCDEFGH"[j]}. ${escapeHtml(o)}</li>`).join("");
+
+    // 👇 核心修改：前端截断超长文本，防止 DOM 渲染卡死
+    const safeQuestion = q.question && q.question.length > 1000
+        ? q.question.slice(0, 1000) + I18N.truncated
+        : (q.question || "");
+    const safeAnalysis = q.analysis && q.analysis.length > 1000
+        ? q.analysis.slice(0, 1000) + I18N.truncated
+        : (q.analysis || "");
+
+    div.innerHTML = `
+      <div class="preview-head">
+        <span class="tag">${q._qnum != null ? q._qnum : idx + 1}</span>
+        <select class="q-type-select">
+          ${Object.entries(I18N.type_labels).map(([v, l]) => `<option value="${v}" ${q.type === v ? "selected" : ""}>${l}</option>`).join("")}
+        </select>
+        <button class="btn-del-preview">${I18N.del_q}</button>
+      </div>
+      <textarea class="q-question-edit" rows="2">${escapeHtml(safeQuestion)}</textarea>
+      ${optionsHtml ? `<ul class="option-list">${optionsHtml}</ul>` : ""}
+      <div class="preview-edit-row">
+        <label class="preview-edit-label">${I18N.answer}</label>
+        <input type="text" class="q-answer-edit" value="${escapeHtml(answerToString(q.answer))}" placeholder="${I18N.ans_ph}">
+      </div>
+      <div class="preview-analysis-wrap">
+        <label class="preview-edit-label">${I18N.analysis}</label>
+        <textarea class="q-analysis-edit" rows="3">${escapeHtml(safeAnalysis)}</textarea>
+      </div>
+    `;
+
+    div.querySelector(".q-type-select").onchange = (e) => { q.type = e.target.value; syncQuestion(idx, q); };
+    div.querySelector(".q-question-edit").oninput = (e) => { q.question = e.target.value; syncQuestion(idx, q); };
+    div.querySelector(".q-answer-edit").oninput = (e) => {
+      const raw = e.target.value.trim();
+      if (q.type === "multiple") q.answer = raw.split(/[,，、\s]+/).filter(Boolean);
+      else if (q.type === "judge") {
+        const up = raw.toUpperCase();
+        if (up === "A" || up === "T" || raw === "正确" || raw === "对") q.answer = "T";
+        else if (up === "B" || up === "F" || raw === "错误" || raw === "错") q.answer = "F";
+        else q.answer = raw;
+      } else q.answer = raw;
+      syncQuestion(idx, q);
+    };
+    div.querySelector(".q-analysis-edit").oninput = (e) => { q.analysis = e.target.value; syncQuestion(idx, q); };
+    div.querySelector(".btn-del-preview").onclick = async () => {
+      if (!confirm(I18N.confirm_del_q.replace("{n}", idx + 1))) return;
+      await fetch(`/api/parse_delete/${currentSid}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ index: idx }) });
+      div.remove();
+    };
+    return div;
+  }
+
+  const syncTimers = {};
+  function syncQuestion(idx, q) {
+    clearTimeout(syncTimers[idx]);
+    syncTimers[idx] = setTimeout(() => {
+      fetch(`/api/parse_update/${currentSid}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ index: idx, question: q }) });
+    }, 400);
+  }
+
+  function renderPager() {
+    const pager = $("#pager");
+    if (!pager) return;
+    pager.innerHTML = "";
+    const btnPrev = document.createElement("button");
+    btnPrev.textContent = I18N.common_prev;
+    btnPrev.disabled = currentPage <= 1;
+    btnPrev.onclick = () => loadPage(currentPage - 1);
+    pager.appendChild(btnPrev);
+
+    const start = Math.max(1, currentPage - 2), end = Math.min(totalPages, start + 4);
+    for (let p = start; p <= end; p++) {
+      const b = document.createElement("button"); b.textContent = p;
+      if (p === currentPage) b.classList.add("active");
+      b.onclick = () => loadPage(p); pager.appendChild(b);
+    }
+
+    const btnNext = document.createElement("button");
+    btnNext.textContent = I18N.common_next;
+    btnNext.disabled = currentPage >= totalPages;
+    btnNext.onclick = () => loadPage(currentPage + 1);
+    pager.appendChild(btnNext);
+  }
+
+  function setLayout(mode) {
+    const layout = $("#splitLayout"), toggle = $("#btnToggleLayout");
+    if (!layout || !toggle) return;
+    const isMobile = window.innerWidth <= 768;
+
+    if (mode === "single") {
+      layout.classList.add("single-col");
+      if (isMobile) {
+        layout.classList.remove("show-raw");
+        toggle.textContent = I18N.raw_title;
+      } else {
+        toggle.textContent = I18N.btn_double;
+      }
+    } else {
+      layout.classList.remove("single-col");
+      toggle.textContent = I18N.btn_single;
+    }
+  }
+
+  checkOcrEnv();
+  checkOllamaEnv();
+
+  // ================= 核心：表单提交 =================
+  const convertForm = $("#convertForm");
+  if (convertForm) {
+    convertForm.onsubmit = async (e) => {
+      e.preventDefault();
+      const form = new FormData(e.target);
+      if ($("#useOcr").checked) form.append("ocr", "1");
+
+      // 👇 新增：禁用提交按钮
+      const submitBtn = convertForm.querySelector('button[type="submit"]');
+      const originalText = submitBtn.textContent;
+      submitBtn.disabled = true;
+      submitBtn.textContent = I18N.btn_parsing;
+
+      const msg = $("#convertMsg");
+      msg.className = "msg";
+      msg.innerHTML = `${I18N.parsing}<span class="loading-dots"></span>`;
+
+      const splitLayout = $("#splitLayout");
+      const btnToggle = $("#btnToggleLayout");
+      if (splitLayout) splitLayout.hidden = false;
+      if (btnToggle) btnToggle.hidden = false;
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 120000);
+
+      try {
+        const res = await fetch("/api/parse_file", {
+          method: "POST",
+          body: form,
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+        const data = await res.json();
+
+        if (!data.ok || data.count === 0) {
+          msg.className = "msg err";
+          msg.textContent = data.msg ? "✗ " + data.msg : I18N.parse_zero;
+          if ($("#previewSummary")) $("#previewSummary").textContent = I18N.parse_fail;
+          return;
+        }
+
+        msg.className = "msg ok";
+        let extra = "";
+        if (data.missing && data.missing.length > 0) {
+          const preview = data.missing.slice(0, 50).join(", ") + (data.missing.length > 50 ? " …" : "");
+          extra = `<br>${I18N.miss_alert.replace("{n}", data.missing.length)}<span style="color:#c0392b">${preview}</span>` +
+                  `<br><span style="color:#8892a0">${I18N.miss_reason}</span><br><br><b>${I18N.miss_how}</b>` +
+                  `<ol style="margin:6px 0 0 20px;font-size:13px;color:#5a6a7a;line-height:1.8;">` +
+                  `<li>${I18N.miss_1}</li><li>${I18N.miss_2}</li><li>${I18N.miss_3}</li><li>${I18N.miss_4}</li></ol>`;
+        } else {
+          extra = `<br><span style="color:#8892a0">${I18N.no_missing}</span>`;
+        }
+        msg.innerHTML = I18N.parse_ok.replace("{n}", data.count).replace("{ms}", data.elapsed_ms) + extra;
+
+        currentSid = data.sid;
+
+        try {
+          const rawRes = await fetch(`/api/parse_raw/${currentSid}`);
+          const rawData = await rawRes.json();
+          if (rawData.ok) {
+            if ($("#debugBadge")) $("#debugBadge").textContent = rawData.total_lines;
+            if ($("#debugSummary")) $("#debugSummary").textContent = I18N.raw_sum.replace("{n}", rawData.total_lines).replace("{ocr}", "");
+            renderRawText(rawData.all_lines || []);
+          }
+        } catch(e) { console.log("拉取原文失败，不影响主体"); }
+
+        loadPage(1);
+      } catch (err) {
+        clearTimeout(timeoutId);
+        msg.className = "msg err";
+        if (err.name === 'AbortError') {
+          msg.textContent = I18N.timeout;
+        } else {
+          msg.textContent = I18N.net_error;
+        }
+      } finally {
+        // 👇 放在 catch 的后面，这里是终点
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+      }
+    };
+  }
+
+  const btnDebug = $("#btnDebug");
+  if (btnDebug) {
+    btnDebug.onclick = async () => {
+      if (!document.querySelector("#convertForm input[type=file]").files.length) return alert(I18N.select_file_first);
+      const splitLayout = $("#splitLayout");
+      const btnToggle = $("#btnToggleLayout");
+      if (splitLayout) splitLayout.hidden = false;
+      if (btnToggle) btnToggle.hidden = false;
+      await fetchRawText();
+    };
+  }
+
+  const btnToggleLayout = $("#btnToggleLayout");
+  if (btnToggleLayout) {
+    btnToggleLayout.onclick = () => {
+      const layout = $("#splitLayout");
+      if (!layout) return;
+      const isMobile = window.innerWidth <= 768;
+
+      if (isMobile) {
+        if (layout.classList.contains("show-raw")) {
+          layout.classList.remove("show-raw");
+          btnToggleLayout.textContent = I18N.raw_title;
+        } else {
+          layout.classList.add("show-raw");
+          btnToggleLayout.textContent = I18N.preview_title;
+        }
+      } else {
+        setLayout(layout.classList.contains("single-col") ? "double" : "single");
+      }
+    };
+  }
+
+  const btnImport = $("#btnImport");
+  if (btnImport) {
+    btnImport.onclick = async () => {
+      if (!currentSid) return;
+      if (!confirm(I18N.confirm_import.replace("{n}", totalCount))) return;
+      const msg = $("#importMsg"); msg.className = "msg"; msg.textContent = I18N.importing;
+
+      const res = await fetch("/api/import_parsed", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sid: currentSid, replace: $("#replaceExisting").checked })
+      });
+      const data = await res.json();
+      if (!data.ok) { msg.className = "msg err"; msg.textContent = "✗ " + (data.msg || I18N.parse_fail); return; }
+      msg.className = "msg ok"; msg.textContent = I18N.import_ok.replace("{n}", data.count);
+      setTimeout(() => location.href = "/", 900);
+    };
+  }
+
+  const btnAiParse = $("#btnAiParse");
+  if (btnAiParse) {
+    btnAiParse.onclick = async () => {
+      const fileInput = document.querySelector("#convertForm input[type=file]");
+      if (!fileInput.files.length) { alert(I18N.ai_select); return; }
+      if (!confirm(I18N.ai_confirm)) return;
+
+      // 👇 新增
+      btnAiParse.disabled = true;
+      const originalText = btnAiParse.textContent;
+      btnAiParse.textContent = I18N.btn_ai_parsing;
+
+      const form = new FormData();
+      form.append("file", fileInput.files[0]);
+      const msg = $("#convertMsg");
+      msg.className = "msg";
+      msg.innerHTML = `${I18N.ai_running}<span class="loading-dots"></span>`;
+
+      try {
+        const res = await fetch("/api/parse_ai", { method: "POST", body: form });
+        const data = await res.json();
+        if (!data.ok) { msg.className = "msg err"; msg.textContent = "✗ " + (data.msg || I18N.ai_fail); return; }
+
+        msg.className = "msg ok"; msg.textContent = `✓ ${data.count}`;
+        currentSid = data.sid;
+        const splitLayout = $("#splitLayout");
+        const btnToggle = $("#btnToggleLayout");
+        if (splitLayout) splitLayout.hidden = false;
+        if (btnToggle) btnToggle.hidden = false;
+        loadPage(1);
+        fetchRawText();
+      } catch (e) {
+        msg.className = "msg err"; msg.textContent = "✗ " + I18N.ai_timeout;
+      } finally {
+        // 👇 放在 catch 的后面
+        btnAiParse.disabled = false;
+        btnAiParse.textContent = originalText;
+      }
+    };
+  }
+
+  const btnGenerateAiPaper = $("#btnGenerateAiPaper");
+  if (btnGenerateAiPaper) {
+    btnGenerateAiPaper.onclick = async () => {
+      const fileInput = document.querySelector("#convertForm input[type=file]");
+      const mode = $("#aiMode").value;
+      const subject = $("#aiSubject").value;
+      const difficulty = $("#aiDifficulty").value;
+      const count = $("#aiQuestionCount").value || 4;
+
+      if (!fileInput.files.length) { alert(I18N.select_file_first); return; }
+      if (!confirm(I18N.reading_gen_confirm)) return;
+
+      // 👇 新增
+      btnGenerateAiPaper.disabled = true;
+      const originalText = btnGenerateAiPaper.textContent;
+      btnGenerateAiPaper.textContent = I18N.btn_generating;
+
+      const form = new FormData();
+      form.append("file", fileInput.files[0]);
+      form.append("mode", mode);
+      form.append("subject", subject);
+      form.append("difficulty", difficulty);
+      form.append("count", count);
+
+      const msg = $("#convertMsg");
+      msg.className = "msg";
+      msg.innerHTML = `<div id="ai-log-box" style="background:#1e1e1e; color:#d4d4d4; padding:12px; border-radius:8px; font-family:monospace; font-size:13px; line-height:1.6; margin-top:10px; max-height:200px; overflow-y:auto;"></div>`;
+      const logBox = $("#ai-log-box");
+
+      const appendLog = (text) => {
+        logBox.innerHTML += `> ${text}<br>`;
+        logBox.scrollTop = logBox.scrollHeight;
+      };
+
+      try {
+        const res = await fetch("/api/generate_ai_paper_stream", { method: "POST", body: form });
+        if (!res.ok) throw new Error(I18N.net_error);
+
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder("utf-8");
+        let buffer = "";
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split("\n\n");
+          buffer = lines.pop();
+
+          for (const line of lines) {
+            if (line.startsWith("data: ")) {
+              const dataStr = line.replace("data: ", "").trim();
+              if (!dataStr) continue;
+
+              try {
+                const data = JSON.parse(dataStr);
+                if (data.type === "log") {
+                  appendLog(data.msg);
+                } else if (data.type === "done") {
+                  appendLog(I18N.stream_done);
+                  setTimeout(() => {
+                    window.location.href = `/reading/${data.sid}`;
+                  }, 1500);
+                } else if (data.type === "error") {
+                  appendLog(I18N.stream_error.replace("{msg}", data.msg));
+                }
+              } catch (err) {
+                console.warn("解析流数据失败，可能收到残包：", dataStr);
+              }
+            }
+          }
+        }
+      } catch (e) {
+        appendLog(I18N.stream_lost.replace("{msg}", e.message));
+      } finally {
+        // 👇 放在 catch 的后面
+        btnGenerateAiPaper.disabled = false;
+        btnGenerateAiPaper.textContent = originalText;
+      }
+    };
+  }
+});
+</script>
+</body>
+</html>

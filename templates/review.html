@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="{{ lang_tag }}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ t('nav.review') }} · {{ t('app.name') }}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<style>
+  .variant-opt-label {
+    display: block; padding: 10px; margin-bottom: 8px;
+    border: 1px solid #d0d7de; border-radius: 6px;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .variant-opt-label:hover { background: #f5f8ff; }
+  .variant-opt-label input { margin-right: 8px; }
+  .variant-action-bar { margin-top: 16px; text-align: center; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>🧠 {{ t('nav.review') }}</h1>
+    {% include "_lang_switcher.html" %}
+    <nav class="top-nav"><a href="/">← {{ t('common.back_home') }}</a></nav>
+  </header>
+
+  {% if items %}
+    <p class="hint">{{ t('review.hint', n=items|length) }}</p>
+    <div id="reviewList"></div>
+  {% else %}
+    <section class="panel"><p class="empty-tip">{{ t('review.empty') }}</p></section>
+  {% endif %}
+</div>
+
+<div id="variantModal" class="modal-overlay" style="display:none;">
+  <div class="modal-content">
+    <span id="closeModal" class="modal-close">&times;</span>
+    <h3 class="modal-title">{{ t('wrong_book.variant_title') }}</h3>
+    <div id="variantContent" class="modal-body"></div>
+    <div class="modal-footer">
+      <button id="btnCloseModal" class="btn-cancel">{{ t('wrong_book.variant_close') }}</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const $ = (s) => document.querySelector(s);
+
+const I18N = {
+  q0: {{ t('review.q0')|tojson }},
+  q3: {{ t('review.q3')|tojson }},
+  q4: {{ t('review.q4')|tojson }},
+  q5: {{ t('review.q5')|tojson }},
+  ans: {{ t('result.correct_answer')|tojson }},
+  show_ans: {{ t('review.show_ans')|tojson }},
+  variant_btn: {{ t('wrong_book.variant_btn')|tojson }},
+  variant_gen: {{ t('wrong_book.variant_generating')|tojson }},
+  variant_fail: {{ t('wrong_book.variant_fail')|tojson }},
+  variant_ans: {{ t('wrong_book.variant_ans')|tojson }},
+  variant_analysis: {{ t('wrong_book.variant_analysis')|tojson }},
+  btn_check_ans: {{ t('wrong_book.check_ans')|tojson }},
+  ollama_offline: {{ t('wrong_book.ollama_offline')|tojson }},
+  generating: {{ t('wrong_book.generating')|tojson }},
+  recorded: {{ t('review.recorded')|tojson }},
+  colon: {{ t('common.label_colon')|tojson }}
+};
+
+const ITEMS = JSON.parse('{{ items|tojson|safe }}');
+
+function escapeHtml(s) {
+  return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+function render() {
+  const list = $("#reviewList");
+  list.innerHTML = "";
+
+  ITEMS.forEach(item => {
+    const div = document.createElement("div");
+    div.className = "panel review-item";
+
+    let html = `<div class="q-body">${escapeHtml(item.question)}</div>`;
+    if (item.options && item.options.length) {
+      html += `<ul class="option-list">${item.options.map((o, j) =>
+        `<li>${"ABCDEFGH"[j]}. ${escapeHtml(o)}</li>`).join("")}</ul>`;
+    }
+
+    html += `
+      <div class="show-answer-wrap">
+        <button class="btn-show-answer" style="background:#f0f2f5; color:#5a6a7a; border:none; padding:8px 16px; border-radius:6px; cursor:pointer; margin-top:10px;">${I18N.show_ans}</button>
+      </div>
+    `;
+
+    html += `
+      <div class="answer-area" style="display:none; margin-top:16px; padding-top:16px; border-top:1px dashed #eef1f5;">
+        <div class="answer-line">
+          <span class="label">${I18N.ans}${I18N.colon}</span>
+          <span class="correct" style="color:#27ae60; font-weight:bold;">${escapeHtml(item.correct_display)}</span>
+        </div>
+
+        <div style="margin-top: 12px; text-align: right;">
+          <button class="btn-variant" data-rid="${item.id}">${I18N.variant_btn}</button>
+        </div>
+
+        <div class="quality-row" data-id="${item.id}" style="display:flex; gap:10px; margin-top:16px;">
+          <button data-q="0" style="flex:1; padding:10px; border:1px solid #e74c3c; color:#e74c3c; background:#fff; border-radius:6px; cursor:pointer;">${I18N.q0}</button>
+          <button data-q="3" style="flex:1; padding:10px; border:1px solid #f39c12; color:#f39c12; background:#fff; border-radius:6px; cursor:pointer;">${I18N.q3}</button>
+          <button data-q="4" style="flex:1; padding:10px; border:1px solid #1a73e8; color:#1a73e8; background:#fff; border-radius:6px; cursor:pointer;">${I18N.q4}</button>
+          <button data-q="5" style="flex:1; padding:10px; border:1px solid #2ecc71; color:#2ecc71; background:#fff; border-radius:6px; cursor:pointer;">${I18N.q5}</button>
+        </div>
+      </div>
+    `;
+
+    div.innerHTML = html;
+
+    const btnShow = div.querySelector(".btn-show-answer");
+    const answerArea = div.querySelector(".answer-area");
+    btnShow.onclick = () => {
+      btnShow.style.display = "none";
+      answerArea.style.display = "block";
+    };
+
+    div.querySelectorAll(".quality-row button").forEach(btn => {
+      btn.onclick = async () => {
+        const rid = btn.parentElement.dataset.id;
+        const q = parseInt(btn.dataset.q);
+
+        btn.parentElement.innerHTML = '<span style="color:#8892a0; font-size:14px;">' + I18N.recorded + '</span>';
+        div.style.opacity = "0.5";
+
+        await fetch(`/api/review/${rid}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ quality: q })
+        });
+
+        setTimeout(() => {
+          div.style.display = "none";
+        }, 600);
+      };
+    });
+
+    list.appendChild(div);
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  render();
+
+  const modal = document.getElementById("variantModal");
+  const content = document.getElementById("variantContent");
+  const closeFn = () => modal.style.display = "none";
+
+  if (modal) {
+    document.getElementById("closeModal").onclick = closeFn;
+    document.getElementById("btnCloseModal").onclick = closeFn;
+    modal.onclick = (e) => { if (e.target === modal) closeFn(); };
+  }
+
+  document.getElementById("reviewList").addEventListener("click", async (e) => {
+    if (!e.target.classList.contains("btn-variant")) return;
+
+    const btn = e.target;
+    const rid = btn.dataset.rid;
+
+    // 👇 必须要有这一步：禁用按钮并改变文字
+    btn.disabled = true;
+    const originalText = btn.textContent;
+    btn.textContent = I18N.generating;
+
+    // 1. 前置检查 Ollama
+    try {
+      const check = await fetch("/api/check_ollama");
+      const checkData = await check.json();
+      if (!checkData.ok) {
+        alert(I18N.ollama_offline);
+        return;
+      }
+    } catch (err) {
+      console.error("Ollama check failed", err);
+    }
+
+    // 2. 打开弹窗并请求生成
+    modal.style.display = "flex";
+    content.innerHTML = `<span class="loading-dots">${I18N.variant_gen}</span>`;
+
+    try {
+      const res = await fetch(`/api/generate_variant/${rid}`, { method: "POST" });
+      const data = await res.json();
+
+      if (!data.ok) throw new Error(data.msg);
+
+      const q = data.question;
+
+      let html = `<div style="font-weight:bold; margin-bottom:16px; font-size:16px;">${q.question}</div>`;
+
+      if (q.options) {
+        html += `<div class="variant-options">`;
+        q.options.forEach((o, idx) => {
+          const letter = String.fromCharCode(65 + idx);
+          html += `
+            <label class="variant-opt-label">
+              <input type="radio" name="variant_opt" value="${letter}">
+              ${o}
+            </label>
+          `;
+        });
+        html += `</div>`;
+      }
+
+      html += `
+        <div id="variant-answer-area" style="display:none; margin-top:20px; padding-top:16px; border-top:1px dashed #ccc; background:#f9fbf9; padding:16px; border-radius:8px;">
+          <div style="color:#27ae60; font-weight:bold; margin-bottom:8px;">
+            <b>${I18N.variant_ans}</b>${q.answer}
+          </div>
+          <div style="color:#4a5768; line-height:1.6;">
+            <b>${I18N.variant_analysis}</b>${q.analysis}
+          </div>
+        </div>
+        <div class="variant-action-bar" id="variant-btn-area">
+          <button class="btn-primary" onclick="document.getElementById('variant-answer-area').style.display='block'; this.style.display='none';" style="width:100%;">${I18N.btn_check_ans}</button>
+        </div>
+      `;
+
+      content.innerHTML = html;
+
+    } catch (err) {
+      content.innerHTML = `<span style="color:red;">${I18N.variant_fail}${err.message}</span>`;
+    } finally {
+      // 👇 放在 catch 后面：无论成功失败，恢复按钮
+      btn.disabled = false;
+      btn.textContent = originalText;
+    }
+  });
+});
+</script>
+</body>
+</html>

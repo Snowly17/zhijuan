@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="{{ lang_tag }}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ t('nav.dashboard') }} · {{ t('app.name') }}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<script src="/static/echarts.min.js"></script>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>📊 {{ t('nav.dashboard') }}</h1>
+    {% include "_lang_switcher.html" %}
+    <nav class="top-nav"><a href="/">← {{ t('common.back_home') }}</a></nav>
+  </header>
+
+  <section class="dash-cards">
+    <div class="card"><div class="card-label">{{ t('dash.total_papers') }}</div><div class="card-value" id="statPapers">-</div></div>
+    <div class="card"><div class="card-label">{{ t('dash.avg_rate') }}</div><div class="card-value" id="statRate">-</div></div>
+    <div class="card"><div class="card-label">{{ t('dash.total_wrong') }}</div><div class="card-value" id="statWrong">-</div></div>
+    <div class="card"><div class="card-label">{{ t('dash.review_count') }}</div><div class="card-value text-orange" id="statReview">-</div></div>
+  </section>
+
+  <div class="dash-charts">
+    <section class="panel chart-box">
+      <h2>{{ t('dash.trend_title') }}</h2>
+      <div id="trendChart" style="width: 100%; height: 300px;"></div>
+    </section>
+    <section class="panel chart-box">
+      <h2>{{ t('dash.type_title') }}</h2>
+      <div id="typeChart" style="width: 100%; height: 300px;"></div>
+    </section>
+  </div>
+</div>
+
+<script>
+const I18N = {
+  papers: {{ t('dash.chart_papers')|tojson }},
+  type_labels: [
+    {{ t('type.single')|tojson }}, {{ t('type.multiple')|tojson }},
+    {{ t('type.judge')|tojson }}, {{ t('type.blank')|tojson }},
+    {{ t('type.short')|tojson }}
+  ]
+};
+
+document.addEventListener("DOMContentLoaded", async () => {
+  const res = await fetch("/api/dashboard_stats");
+  const data = await res.json();
+    if (!data.ok) { alert("{{ t('convert.load_fail') }}"); return; }
+
+  document.getElementById("statPapers").textContent = data.cards.total_papers;
+  document.getElementById("statRate").textContent = data.cards.avg_rate + "%";
+  document.getElementById("statWrong").textContent = data.cards.total_wrong;
+  document.getElementById("statReview").textContent = data.cards.review_count;
+
+  const trendChart = echarts.init(document.getElementById("trendChart"));
+  trendChart.setOption({
+    tooltip: { trigger: "axis" },
+    grid: { left: "3%", right: "4%", bottom: "3%", containLabel: true },
+    xAxis: { type: "category", data: data.trend.dates, axisLine: { lineStyle: { color: "#d0d7de" } }, axisLabel: { color: "#5a6a7a" } },
+    yAxis: { type: "value", minInterval: 1, splitLine: { lineStyle: { type: "dashed", color: "#eef1f5" } }, axisLabel: { color: "#5a6a7a" } },
+    series: [{ name: I18N.papers, type: "line", smooth: true, data: data.trend.counts, itemStyle: { color: "#1a73e8" }, areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: "rgba(26,115,232,0.3)" }, { offset: 1, color: "rgba(26,115,232,0.05)" }]) } }]
+  });
+
+  const typeChart = echarts.init(document.getElementById("typeChart"));
+  typeChart.setOption({
+    tooltip: { trigger: "axis", formatter: "{b}: {c}%" },
+    grid: { left: "3%", right: "4%", bottom: "3%", containLabel: true },
+    xAxis: { type: "category", data: I18N.type_labels,axisLine: { lineStyle: { color: "#d0d7de" } }, axisLabel: { color: "#5a6a7a" } },
+    yAxis: { type: "value", max: 100, splitLine: { lineStyle: { type: "dashed", color: "#eef1f5" } }, axisLabel: { color: "#5a6a7a", formatter: "{value}%" } },
+    series: [{ type: "bar", data: data.types.rates, barWidth: "40%", itemStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: "#2ecc71" }, { offset: 1, color: "#27ae60" }]), borderRadius: [4, 4, 0, 0] } }]
+  });
+
+  window.addEventListener("resize", () => { trendChart.resize(); typeChart.resize(); });
+});
+</script>
+</body>
+</html>

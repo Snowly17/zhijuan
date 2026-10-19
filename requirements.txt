@@ -1,0 +1,26 @@
+# =======================================================
+# 智卷 · 本地优先的智能题库系统 - Python 依赖清单
+# 安装命令：pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+# =======================================================
+
+# --- 核心 Web 框架 ---
+Flask>=2.3.0
+
+# --- 桌面窗口（pywebview 调用系统 WebView2 渲染，无需 Electron） ---
+pywebview>=6.0
+
+# --- 文档解析 (原生 DOCX / PDF) ---
+python-docx>=1.1.0
+pdfplumber>=0.11.0
+PyMuPDF>=1.24.0
+pypdf>=4.0.0
+
+# --- 网络请求 ---
+requests>=2.31.0
+
+# --- 本地 AI 引擎支持 (MCP 插件化与 Ollama) ---
+mcp>=1.0.0
+
+# --- 扫描件 OCR 图片文字识别 ---
+pytesseract>=0.3.10
+Pillow>=10.0.0

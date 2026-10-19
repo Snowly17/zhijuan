@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="{{ lang_tag }}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ t('wrong_book.title') }} · {{ t('app.name') }}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<style>
+  /* 变式题弹窗专用样式 */
+  .variant-opt-label {
+    display: block; padding: 10px; margin-bottom: 8px;
+    border: 1px solid #d0d7de; border-radius: 6px;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .variant-opt-label:hover { background: #f5f8ff; }
+  .variant-opt-label input { margin-right: 8px; }
+  .variant-action-bar { margin-top: 16px; text-align: center; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>📕 {{ t('wrong_book.title') }}</h1>
+    {% include "_lang_switcher.html" %}
+    <nav class="top-nav"><a href="/">← {{ t('common.back_home') }}</a></nav>
+  </header>
+
+  {% if groups %}
+  <section class="panel retry-bar">
+    <div class="retry-row">
+      <div>
+        <div class="retry-title">{{ t('wrong_book.retry_title') }}</div>
+        <div class="retry-sub">{{ t('wrong_book.retry_sub', n=total_wrong) }}</div>
+      </div>
+      <div class="retry-actions">
+        <label class="inline-label">{{ t('wrong_book.per_paper') }} <input type="number" id="retryPerPaper" value="20" min="1" max="200"></label>
+        <button id="btnRetryAll" class="btn-primary">{{ t('wrong_book.retry_all') }}</button>
+      </div>
+    </div>
+    <p id="retryMsg" class="msg"></p>
+  </section>
+
+  {% for pname, items in groups.items() %}
+  <section class="panel wrong-group">
+    <h2 class="group-title">
+      {{ pname }} <span class="badge">{{ items|length }}</span>
+      <button class="btn-retry-group" data-paper="{{ pname }}">{{ t('wrong_book.retry_group') }}</button>
+    </h2>
+    <ol class="detail-list">
+      {% for d in items %}
+      <li class="detail-item bad">
+        <span class="tag {{ d.type }}">{{ t('type.' ~ d.type) }}</span>
+        <div class="q-text">{{ d.question }}</div>
+        {% if d.options %}
+        <ul class="option-list">{% for opt in d.options %}<li>{{ 'ABCDEFGH'[loop.index0] }}. {{ opt }}</li>{% endfor %}</ul>
+        {% endif %}
+        <div class="answer-line"><span class="label">{{ t('result.correct_answer') }}{{ t('common.label_colon') }}</span><span class="correct">{{ d.correct_display }}</span></div>
+        <div class="answer-line"><span class="label">{{ t('result.your_answer') }}{{ t('common.label_colon') }}</span><span class="user">{{ d.user_display }}</span></div>
+        {% if d.analysis %}
+        <div class="answer-line analysis-line"><span class="label">{{ t('result.analysis') }}{{ t('common.label_colon') }}</span><span class="analysis-text">{{ d.analysis }}</span></div>
+        {% endif %}
+
+        <div style="margin-top: 12px; text-align: right;">
+          <button class="btn-variant" data-rid="{{ d.id }}">{{ t('wrong_book.variant_btn') }}</button>
+        </div>
+      </li>
+      {% endfor %}
+    </ol>
+  </section>
+  {% endfor %}
+  {% else %}
+  <section class="panel"><p class="empty-tip">{{ t('wrong_book.empty') }}</p></section>
+  {% endif %}
+</div>
+
+<div id="variantModal" class="modal-overlay" style="display:none;">
+  <div class="modal-content">
+    <span id="closeModal" class="modal-close">&times;</span>
+    <h3 class="modal-title">{{ t('wrong_book.variant_title') }}</h3>
+    <div id="variantContent" class="modal-body"></div>
+    <div class="modal-footer">
+      <button id="btnCloseModal" class="btn-cancel">{{ t('wrong_book.variant_close') }}</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const I18N = {
+  confirm_all: {{ t('wrong_book.confirm_retry_all')|tojson }},
+  confirm_group: {{ t('wrong_book.confirm_retry_group')|tojson }},
+  gen: {{ t('wrong_book.retry_gen')|tojson }},
+  fail: {{ t('wrong_book.retry_fail')|tojson }},
+  variant_gen: {{ t('wrong_book.variant_generating')|tojson }},
+  variant_fail: {{ t('wrong_book.variant_fail')|tojson }},
+  variant_ans: {{ t('wrong_book.variant_ans')|tojson }},
+  variant_analysis: {{ t('wrong_book.variant_analysis')|tojson }},
+  btn_check_ans: {{ t('wrong_book.check_ans')|tojson }},
+  ollama_offline: {{ t('wrong_book.ollama_offline')|tojson }},
+  generating: {{ t('wrong_book.generating')|tojson }}
+};
+
+const $ = (s) => document.querySelector(s);
+
+async function retry(paperName) {
+  const perPaper = parseInt($("#retryPerPaper").value) || 20;
+  const msg = $("#retryMsg");
+  msg.className = "msg"; msg.textContent = I18N.gen;
+  const res = await fetch("/api/retry_wrong", {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ paper_name: paperName || "", per_paper: perPaper })
+  });
+  const data = await res.json();
+  if (!data.ok) { msg.className = "msg err"; msg.textContent = "✗ " + (data.msg || I18N.fail); return; }
+  msg.className = "msg ok"; msg.textContent = `✓ ${data.count}`;
+  setTimeout(() => location.href = "/", 900);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  $("#btnRetryAll").onclick = () => { if (confirm(I18N.confirm_all)) retry(""); };
+  document.querySelectorAll(".btn-retry-group").forEach(btn => {
+    btn.onclick = () => { if (confirm(I18N.confirm_group.replace("{n}", btn.dataset.paper))) retry(btn.dataset.paper); };
+  });
+
+  const modal = document.getElementById("variantModal");
+  const content = document.getElementById("variantContent");
+  const closeFn = () => modal.style.display = "none";
+
+  if (modal) {
+    document.getElementById("closeModal").onclick = closeFn;
+    document.getElementById("btnCloseModal").onclick = closeFn;
+    modal.onclick = (e) => { if (e.target === modal) closeFn(); };
+  }
+
+  // ==========================================
+  // 👇 核心修复：全局并发锁
+  // ==========================================
+  let isGeneratingVariant = false;
+
+  document.querySelectorAll(".btn-variant").forEach(btn => {
+    btn.onclick = async () => {
+      if (isGeneratingVariant) return; // 1. 防止连点
+      isGeneratingVariant = true;
+
+      const rid = btn.dataset.rid;
+      const allBtns = document.querySelectorAll(".btn-variant"); // 获取所有按钮
+      const originalText = btn.textContent;
+
+      // 2. 禁用页面上所有的“举一反三”按钮
+      allBtns.forEach(b => {
+        b.disabled = true;
+        b.style.opacity = "0.5";
+        b.style.cursor = "not-allowed";
+      });
+      btn.textContent = I18N.generating;
+
+      // 3. 前置检查 Ollama
+      try {
+        const check = await fetch("/api/check_ollama");
+        const checkData = await check.json();
+        if (!checkData.ok) {
+          alert(I18N.ollama_offline);
+          throw new Error("Ollama not running"); // 抛出错误，交给 catch/finally 处理
+        }
+      } catch (e) {
+        console.error("Ollama check failed", e);
+        // 这里不需要 return，直接让它走到 finally 释放锁
+        isGeneratingVariant = false;
+        allBtns.forEach(b => { b.disabled = false; b.style.opacity = "1"; b.style.cursor = "pointer"; });
+        btn.textContent = originalText;
+        return;
+      }
+
+      // 4. 打开弹窗并请求生成
+      modal.style.display = "flex";
+      content.innerHTML = `<span class="loading-dots">${I18N.variant_gen}</span>`;
+
+      try {
+        const res = await fetch(`/api/generate_variant/${rid}`, { method: "POST" });
+        const data = await res.json();
+
+        if (!data.ok) throw new Error(data.msg);
+
+        const q = data.question;
+
+        let html = `<div style="font-weight:bold; margin-bottom:16px; font-size:16px;">${q.question}</div>`;
+
+        if (q.options) {
+          html += `<div class="variant-options">`;
+          q.options.forEach((o, idx) => {
+            const letter = String.fromCharCode(65 + idx);
+            html += `
+              <label class="variant-opt-label">
+                <input type="radio" name="variant_opt" value="${letter}">
+                ${o}
+              </label>
+            `;
+          });
+          html += `</div>`;
+        }
+
+        html += `
+          <div id="variant-answer-area" style="display:none; margin-top:20px; padding-top:16px; border-top:1px dashed #ccc; background:#f9fbf9; padding:16px; border-radius:8px;">
+            <div style="color:#27ae60; font-weight:bold; margin-bottom:8px;">
+              <b>${I18N.variant_ans}</b>${q.answer}
+            </div>
+            <div style="color:#4a5768; line-height:1.6;">
+              <b>${I18N.variant_analysis}</b>${q.analysis}
+            </div>
+          </div>
+          <div class="variant-action-bar" id="variant-btn-area">
+            <button class="btn-primary" onclick="document.getElementById('variant-answer-area').style.display='block'; this.style.display='none';" style="width:100%;">${I18N.btn_check_ans}</button>
+          </div>
+        `;
+
+        content.innerHTML = html;
+
+      } catch (e) {
+        content.innerHTML = `<span style="color:red;">${I18N.variant_fail}${e.message}</span>`;
+      } finally {
+        // 5. 核心修复：无论成功失败，释放全局锁，恢复所有按钮
+        isGeneratingVariant = false;
+        allBtns.forEach(b => {
+          b.disabled = false;
+          b.style.opacity = "1";
+          b.style.cursor = "pointer";
+        });
+        btn.textContent = originalText;
+      }
+    };
+  });
+});
+</script>
+</body>
+</html>

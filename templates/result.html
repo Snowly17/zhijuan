@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="{{ lang_tag }}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ paper.name }} - {{ t('result.title') }}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>{{ t('result.title') }} · {{ paper.name }}</h1>
+    {% include "_lang_switcher.html" %}
+    <div class="top-nav">
+      <a href="/">← {{ t('common.back_home') }}</a>
+      <a href="/wrong">{{ t('result.view_wrong_book') }}</a>
+    </div>
+  </header>
+
+  <section class="score-banner">
+    <div class="score-num">{{ '%.1f'|format(result.score) }}</div>
+    <div class="score-sub">/ {{ '%.1f'|format(result.total_score) }} {{ t('result.points') }}</div>
+    <div class="score-rate">{{ t('result.correct_rate', rate='%.1f'|format(result.score / result.total_score * 100 if result.total_score else 0)) }}</div>
+  </section>
+
+  <section class="panel">
+    <h2>{{ t('result.detail_title') }}</h2>
+    <ol class="detail-list">
+      {% for d in detail %}
+      <li class="detail-item {{ 'ok' if d.ok else 'bad' }}">
+        <div class="detail-head">
+          <span class="tag {{ d.type }}">{{ t('type.' ~ d.type) }}</span>
+          <span class="mark">{{ '✓' if d.ok else '✗' }} {{ '%.1f'|format(d.got) }} / {{ '%.1f'|format(d.score) }} {{ t('result.points') }}</span>
+        </div>
+        <div class="q-text">{{ d.question }}</div>
+        {% if d.options %}
+        <ul class="option-list">
+          {% for opt in d.options %}<li>{{ 'ABCDEFGH'[loop.index0] }}. {{ opt }}</li>{% endfor %}
+        </ul>
+        {% endif %}
+        <div class="answer-line"><span class="label">{{ t('result.correct_answer') }}{{ t('common.label_colon') }}</span><span class="correct">{{ d.correct_display }}</span></div>
+        <div class="answer-line"><span class="label">{{ t('result.your_answer') }}{{ t('common.label_colon') }}</span><span class="user">{{ d.user_display }}</span></div>
+        {% if d.analysis %}
+        <div class="answer-line analysis-line"><span class="label">{{ t('result.analysis') }}{{ t('common.label_colon') }}</span><span class="analysis-text">{{ d.analysis }}</span></div>
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ol>
+  </section>
+</div>
+</body>
+</html>

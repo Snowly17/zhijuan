@@ -1,0 +1,84 @@
+# ============================================================
+#  智卷 · .gitignore
+#  原则：数据库、虚拟环境、打包产物、个人调试脚本、私有大文件
+#        一律不进仓库；代码与资源（templates/static/i18n/docs）全部保留
+# ============================================================
+
+# ---------- 用户数据 / 数据库（最重要，绝对不能提交） ----------
+data/
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+
+# ---------- Python ----------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg
+*.egg-info/
+.eggs/
+build/
+dist/
+develop-eggs/
+downloads/
+wheels/
+sdist/
+*.spec
+
+# ---------- 打包 / 构建中间产物 ----------
+build/pyinstaller/
+dist/installer/
+*.exe
+*.msi
+*.zip
+*.7z
+# 图标 ico 由 build.py 从 png 自动生成，不入库
+static/icon.ico
+
+# ---------- 依赖 / 虚拟环境 ----------
+venv/
+.venv/
+env/
+ENV/
+.conda/
+.piptmp/
+
+# ---------- 私有文档 / 个人调试脚本 ----------
+# （含本机绝对路径或商业材料，不适合公开）
+debug_mcp.py
+test_mcp.py
+quiz_ppt_outline.txt
+*.pdf
+*.pptx
+*.pptx.lock
+412eeb87888078ded98aa201322a001d.png
+*.zip
+
+# ---------- pip 残留目录 ----------
+pip-build-tracker-*/
+pip-ephem-wheel-cache-*/
+pip-install-*/
+
+# ---------- IDE / 系统 ----------
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---------- 日志 / 临时 ----------
+*.log
+*.tmp
+*.bak
+*.cache
+tessdata/
+.coverage
+.pytest_cache/
+htmlcov/

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="{{ lang_tag }}">
+<head>
+<meta charset="UTF-8">
+<title>{{ t('privacy.title') }} · {{ t('app.name') }}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="header-top">
+      <h1>🔒 {{ t('privacy.title') }} <span class="brand-sub">· {{ t('app.name') }}</span></h1>
+      {% include "_lang_switcher.html" %}
+    </div>
+    <nav class="top-nav"><a href="/">← {{ t('nav.home') }}</a></nav>
+  </header>
+
+  <section class="panel">
+    <h2>{{ t('privacy.commit_title') }}</h2>
+    <ul class="help-list" style="font-size:15px; line-height:2; color:#2c3e50;">
+      <li><b>{{ t('privacy.c1_title') }}</b>：{{ t('privacy.c1_desc') }}</li>
+      <li><b>{{ t('privacy.c2_title') }}</b>：{{ t('privacy.c2_desc') }}</li>
+      <li><b>{{ t('privacy.c3_title') }}</b>：{{ t('privacy.c3_desc') }}</li>
+      <li><b>{{ t('privacy.c4_title') }}</b>：{{ t('privacy.c4_desc') }}</li>
+      <li><b>{{ t('privacy.c5_title') }}</b>：{{ t('privacy.c5_desc') }}</li>
+    </ul>
+  </section>
+
+  <section class="panel">
+    <h2>{{ t('privacy.why_title') }}</h2>
+    <p class="hint" style="font-size:14px; line-height:1.8;">
+      {{ t('privacy.why_desc_1') }}<br><br>
+      {{ t('privacy.why_desc_2') }}
+    </p>
+  </section>
+</div>
+</body>
+</html>

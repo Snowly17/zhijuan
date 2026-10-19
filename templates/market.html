@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="{{ lang_tag }}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ t('market.title') }} · {{ t('app.name') }}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container">
+  <header class="site-header">
+    <div class="header-top">
+      <div class="brand">
+        <div class="brand-logo">
+          <span class="logo-block green"></span><span class="logo-block blue"></span>
+          <span class="logo-block red"></span><span class="logo-block yellow"></span>
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">{{ t('app.name') }}</span>
+          <span class="brand-tagline">· {{ t('market.title') }}</span>
+        </div>
+      </div>
+      {% include "_lang_switcher.html" %}
+    </div>
+    <nav class="main-nav">
+      <a href="/">← {{ t('common.back_home') }}</a>
+    </nav>
+  </header>
+
+  <div class="global-tip" style="display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap;">
+    <div style="flex: 1; min-width: 300px;">
+      <b>🌱 {{ t('market.ecosystem') }}</b>{{ t('common.label_colon') }}{{ t('market.desc') }}
+    </div>
+    <a href="/api/market/export" class="btn-cancel" style="white-space: nowrap; flex-shrink: 0; text-decoration: none; font-size: 13px; padding: 8px 16px;">
+      {{ t('market.export') }}
+    </a>
+  </div>
+
+  <section class="panel">
+    <div id="marketList" class="market-grid">
+      <p class="empty-tip">{{ t('market.loading') }}</p>
+    </div>
+  </section>
+</div>
+
+<script>
+const $ = (s) => document.querySelector(s);
+const I18N = {
+  offline: {{ t('market.offline')|tojson }},
+  empty: {{ t('market.empty')|tojson }},
+  contributor: {{ t('market.contributor')|tojson }},
+  import_btn: {{ t('market.import')|tojson }},
+  importing: {{ t('market.importing')|tojson }},
+  confirm: {{ t('market.confirm_import')|tojson }},
+  no_url: {{ t('market.no_url')|tojson }},
+  import_ok: {{ t('market.import_ok')|tojson }},
+  import_fail: {{ t('market.import_fail')|tojson }},
+  del_fail: {{ t('market.del_fail')|tojson }}
+};
+
+async function loadMarket() {
+  const res = await fetch("/api/market/list");
+  const data = await res.json();
+  const list = $("#marketList");
+  list.innerHTML = "";
+
+  if (data.offline) {
+    list.innerHTML += `<p style="color:#c0392b;font-size:12px;grid-column:1/-1;">${I18N.offline}</p>`;
+  }
+
+  if (!data.data || data.data.length === 0) {
+    list.innerHTML += `<p class="empty-tip">${I18N.empty}</p>`;
+    return;
+  }
+
+  data.data.forEach(item => {
+    const div = document.createElement("div");
+    div.className = "market-card";
+    div.innerHTML = `
+      <div class="market-card-head">
+        <h3>${item.name}</h3>
+        <span class="badge">${item.count}</span>
+      </div>
+      <p class="market-author">${I18N.contributor}${item.author}</p>
+      <p class="market-desc">${item.desc}</p>
+      <div class="market-actions">
+        <button class="btn-primary btn-import" data-url="${item.url}" data-name="${item.name}">${I18N.import_btn}</button>
+      </div>
+    `;
+    list.appendChild(div);
+  });
+
+  document.querySelectorAll(".btn-import").forEach(btn => {
+    btn.onclick = async () => {
+      const url = btn.dataset.url;
+      const name = btn.dataset.name;
+
+      if (!url) { alert(I18N.no_url); return; }
+      if (!confirm(I18N.confirm.replace("{name}", name))) return;
+
+      btn.textContent = I18N.importing;
+      btn.disabled = true;
+
+      try {
+        const res = await fetch("/api/market/import", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url, replace: false })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          alert(I18N.import_ok.replace("{n}", data.count));
+        } else {
+          alert(I18N.del_fail.replace("{msg}", data.msg));
+        }
+      } catch (e) {
+        alert(I18N.import_fail);
+      } finally {
+        btn.textContent = I18N.import_btn;
+        btn.disabled = false;
+      }
+    };
+  });
+}
+document.addEventListener("DOMContentLoaded", loadMarket);
+</script>
+</body>
+</html>

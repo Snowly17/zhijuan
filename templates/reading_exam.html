@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="{{ lang_tag }}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ t('reading.title') }} · {{ t('app.name') }}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<style>
+  /* ====== 屏幕预览专用样式 ====== */
+  body { background: #f5f6fa; margin: 0; padding-bottom: 40px; }
+  .toolbar { background: #fff; padding: 12px 20px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin: 20px auto; max-width: 1200px; }
+  .toolbar-actions { display: flex; gap: 10px; }
+  .btn-tool { padding: 8px 16px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; }
+  .btn-print { background: #1a73e8; color: #fff; }
+  .btn-word { background: #2ecc71; color: #fff; }
+  .btn-setting { background: #f0f2f5; color: #333; }
+  .btn-home { background: #f0f2f5; color: #333; }
+
+  .reading-layout { display: flex; gap: 20px; align-items: flex-start; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+  /* 左侧：文章区 */
+  .article-box { flex: 1.2; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); max-height: 80vh; overflow-y: auto; }
+
+  /* 试卷头（原本没有，现在加在文章框内部） */
+  .paper-header { border-bottom: 2px solid #2c3e50; padding-bottom: 15px; margin-bottom: 24px; }
+  .paper-main-title { text-align: center; font-size: 22px; font-weight: bold; margin-bottom: 16px; }
+  .paper-info { display: flex; justify-content: center; gap: 30px; font-size: 14px; }
+
+  /* 文章标题与内容 */
+  .article-title { text-align: center; font-size: 18px; font-weight: bold; margin-bottom: 16px; }
+  .article-content { line-height: 1.8; text-indent: 2em; color: #2c3e50; text-align: justify; font-size: var(--paper-font-size); }
+
+  /* 右侧：题目区 */
+  .questions-box { flex: 1; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+
+  :root {
+    --paper-font-size: 14px;
+    --option-layout: column;
+    --print-font: "{{ t('reading.print_font') }}", serif;
+  }
+
+  .q-block { margin-bottom: 24px; }
+  .q-title { font-size: var(--paper-font-size); font-weight: bold; margin-bottom: 12px; }
+  .q-options { display: flex; flex-direction: var(--option-layout); gap: 10px; margin-left: 12px; }
+
+  /* 自定义单选按钮 */
+  .custom-opt {
+    display: flex; align-items: center; gap: 8px;
+    cursor: pointer; font-size: var(--paper-font-size);
+    padding: 6px 10px; border-radius: 6px; border: 1px solid transparent;
+    transition: all 0.2s;
+  }
+  .custom-opt:hover { background: #f5f8ff; }
+  .custom-opt.selected { border-color: #1a73e8; background: #eef3ff; }
+  .radio-mark {
+    display: inline-block; width: 16px; height: 16px;
+    border-radius: 50%; border: 2px solid #b0b8c1;
+    position: relative; flex-shrink: 0; transition: all 0.2s;
+  }
+  .custom-opt.selected .radio-mark { border-color: #1a73e8; }
+  .custom-opt.selected .radio-mark::after {
+    content: ""; position: absolute;
+    top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 8px; height: 8px; border-radius: 50%; background: #1a73e8;
+  }
+
+  .short-textarea { width: 100%; height: 100px; margin-top: 8px; padding: 10px; border: 1px solid #d0d7de; border-radius: 6px; font-family: inherit; resize: vertical; }
+
+  /* 右侧抽屉配置面板 */
+  .drawer-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.3); display: none; z-index: 999; }
+  .drawer { position: fixed; top: 0; right: -320px; width: 300px; height: 100%; background: #fff; box-shadow: -2px 0 10px rgba(0,0,0,0.1); z-index: 1000; transition: right 0.3s; padding: 24px; box-sizing: border-box; overflow-y: auto; }
+  .drawer.open { right: 0; }
+  .drawer h3 { margin-top: 0; color: #1a73e8; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+  .setting-group { margin-bottom: 20px; }
+  .setting-group label { display: block; font-size: 13px; color: #5a6a7a; margin-bottom: 6px; font-weight: bold; }
+  .setting-group input[type="text"], .setting-group select { width: 100%; padding: 8px; border: 1px solid #d0d7de; border-radius: 6px; box-sizing: border-box; }
+  .setting-group input[type="checkbox"] { margin-right: 6px; }
+  .close-drawer { position: absolute; top: 20px; right: 20px; cursor: pointer; font-size: 20px; color: #888; }
+
+  /* ====== 打印专用样式 (A4排版) ====== */
+  @media print {
+    body { background: #fff; margin: 0; padding: 0; font-family: var(--print-font); }
+    .no-print, .toolbar, .drawer, .drawer-overlay { display: none !important; }
+    .container { max-width: 100%; padding: 0; }
+    .reading-layout { display: block; padding: 0; }
+    .article-box, .questions-box { border: none; box-shadow: none; padding: 0; max-height: none; overflow: visible; }
+
+    /* 打印时的试卷头 */
+    .paper-header { border-bottom: 1px solid #000; margin-bottom: 20px; padding-bottom: 10px; }
+    .paper-main-title { font-size: 24px; margin-bottom: 12px; }
+    .paper-info { font-size: 14px; }
+
+    /* 打印时的文章 */
+    .article-title { font-size: 18px; margin-bottom: 16px; }
+    .article-content { font-size: 14px; line-height: 1.6; text-indent: 2em; text-align: justify; }
+
+    .questions-box { margin-top: 30px; }
+    .q-block { margin-bottom: 20px; page-break-inside: avoid; }
+    .q-title { font-size: 14px; font-weight: bold; }
+    .q-options { display: flex; flex-direction: var(--option-layout); gap: 4px; margin-left: 0; margin-top: 6px; }
+
+    /* 打印时：空心圆，无高亮 */
+    .custom-opt { padding: 2px 0; border: none; background: none !important; }
+    .custom-opt.selected { background: none !important; }
+    .radio-mark { border: 1px solid #000 !important; width: 12px; height: 12px; background: #fff !important; }
+    .custom-opt.selected .radio-mark::after { display: none; }
+
+    .short-textarea { display: none; }
+    .short-blank { display: block !important; border-bottom: 1px dashed #ccc; margin-bottom: 20px; }
+  }
+
+  @media (max-width: 768px) {
+    .reading-layout { flex-direction: column; }
+    .article-box, .questions-box { max-height: none; width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar no-print">
+  <div class="toolbar-actions">
+    <button class="btn-tool btn-print" onclick="window.print()">{{ t('reading.print') }}</button>
+    <button class="btn-tool btn-word" id="btnExportWord">{{ t('reading.export_word') }}</button>
+    <button class="btn-tool btn-setting" id="btnToggleDrawer">⚙️ {{ t('reading.layout_settings') }}</button>
+  </div>
+  <a href="/" class="btn-tool btn-home">← {{ t('common.back_home') }}</a>
+</div>
+
+<div class="reading-layout" id="readingLayout">
+
+  <div class="article-box">
+    <!-- 👇 新增：正规试卷头部 👇 -->
+    <div class="paper-header" id="paperHeader">
+      <div class="paper-main-title" id="paperMainTitle">{{ t('reading.default_paper_title') }}</div>
+      <div class="paper-info" id="paperInfo" style="display:none;">
+          <span>{{ t('reading.name') }}{{ t('common.label_colon') }}______________</span>
+          <span>{{ t('reading.id') }}{{ t('common.label_colon') }}______________</span>
+          <span>{{ t('reading.score') }}{{ t('common.label_colon') }}______________</span>
+      </div>
+    </div>
+
+    <!-- 👇 文章区 👇 -->
+    <div class="article-title" id="articleTitle">{{ t('reading.loading') }}</div>
+    <div class="article-content" id="rContent"></div>
+  </div>
+
+  <div class="questions-box" id="rQuestions"></div>
+</div>
+
+<div class="drawer-overlay" id="drawerOverlay"></div>
+<div class="drawer" id="settingDrawer">
+  <span class="close-drawer" id="closeDrawer">&times;</span>
+  <h3>📝 {{ t('reading.layout_settings') }}</h3>
+
+  <div class="setting-group">
+    <label>{{ t('reading.paper_title') }}</label>
+    <input type="text" id="setPaperTitle" placeholder="{{ t('reading.paper_title_ph') }}">
+  </div>
+
+  <div class="setting-group">
+    <label>{{ t('reading.article_title') }}</label>
+    <input type="text" id="setArticleTitle" placeholder="{{ t('reading.article_title_ph') }}">
+  </div>
+
+  <div class="setting-group">
+    <label><input type="checkbox" id="setShowInfo"> {{ t('reading.show_info') }}</label>
+  </div>
+  <div class="setting-group">
+    <label>{{ t('reading.option_layout') }}</label>
+    <select id="setOptionLayout">
+      <option value="column">{{ t('reading.opt_column') }}</option>
+      <option value="row">{{ t('reading.opt_row') }}</option>
+    </select>
+  </div>
+  <div class="setting-group">
+    <label>{{ t('reading.short_blank') }}</label>
+    <select id="setShortBlank">
+      <option value="100px">{{ t('reading.blank_medium') }}</option>
+      <option value="200px">{{ t('reading.blank_large') }}</option>
+      <option value="300px">{{ t('reading.blank_full') }}</option>
+    </select>
+  </div>
+</div>
+
+<div id="i18n-data" hidden
+  data-loading="{{ t('reading.loading') }}"
+  data-error="{{ t('reading.error') }}"
+  data-short-ph="{{ t('reading.short_ph') }}"
+
+  data-paper-title="{{ t('reading.default_paper_title') }}"
+  data-article-title="{{ t('reading.default_article_title') }}"
+  data-fallback-q="{{ t('reading.fallback_question') }}"
+  data-eng-paper-title="{{ t('reading.english_paper_title') }}"
+  data-eng-article-title="{{ t('reading.english_article_title') }}"
+  data-option="{{ t('reading.option') }}"
+  data-empty-questions="{{ t('reading.empty_questions') }}"
+></div>
+
+<script>
+const SID = "{{ sid }}";
+const $ = (s) => document.querySelector(s);
+const d = document.getElementById("i18n-data").dataset;
+
+// 👇 完美消除 VSCode 报错：直接从 data-* 获取
+const I18N_READING = {
+  defaultPaperTitle: d.paperTitle,
+  defaultArticleTitle: d.articleTitle,
+  fallbackQuestion: d.fallbackQ,
+  englishPaperTitle: d.engPaperTitle,
+  englishArticleTitle: d.engArticleTitle
+};
+
+// ================= 抽屉交互逻辑 =================
+const drawer = $("#settingDrawer");
+const overlay = $("#drawerOverlay");
+const toggleDrawer = (open) => {
+  if (open) { drawer.classList.add("open"); overlay.style.display = "block"; }
+  else { drawer.classList.remove("open"); overlay.style.display = "none"; }
+};
+$("#btnToggleDrawer").onclick = () => toggleDrawer(true);
+$("#closeDrawer").onclick = () => toggleDrawer(false);
+overlay.onclick = () => toggleDrawer(false);
+
+// ================= 排版实时生效 =================
+$("#setPaperTitle").oninput = (e) => { $("#paperMainTitle").textContent = e.target.value || I18N_READING.defaultPaperTitle; };
+$("#setArticleTitle").oninput = (e) => { $("#articleTitle").textContent = e.target.value || I18N_READING.defaultArticleTitle; };
+
+$("#setShowInfo").onchange = (e) => {
+  $("#paperInfo").style.display = e.target.checked ? "flex" : "none";
+};
+
+$("#setOptionLayout").onchange = (e) => { document.documentElement.style.setProperty('--option-layout', e.target.value); };
+$("#setShortBlank").onchange = (e) => { document.querySelectorAll(".short-blank").forEach(el => { el.style.height = e.target.value; }); };
+
+// ================= 数据加载与交互逻辑 =================
+async function loadData() {
+  try {
+    const res = await fetch(`/api/parse_page/${SID}?page=1&size=1`);
+    const data = await res.json();
+    if (!data.ok || !data.questions.length) { alert(d.error); return; }
+
+    const reading = data.questions[0];
+
+    // 1. 兼容旧数据
+    let paperTitle = reading.paper_title || I18N_READING.defaultPaperTitle;
+    let articleTitle = reading.article_title || reading.title || I18N_READING.defaultArticleTitle;
+
+    // 👇 2. 修复语言漂移：如果正文是英文，但标题含中文，强制替换
+    if (reading.article) {
+      const isEnglishArticle = (reading.article.match(/[a-zA-Z]/g) || []).length > (reading.article.match(/[\u4e00-\u9fa5]/g) || []).length;
+      const hasChineseTitle = /[\u4e00-\u9fa5]/.test(articleTitle);
+
+      if (isEnglishArticle && hasChineseTitle) {
+        articleTitle = I18N_READING.englishArticleTitle;
+        if (/[\u4e00-\u9fa5]/.test(paperTitle)) {
+          paperTitle = I18N_READING.englishPaperTitle;
+        }
+      }
+    }
+
+    $("#paperMainTitle").textContent = paperTitle;
+    $("#setPaperTitle").value = paperTitle;
+
+    $("#articleTitle").textContent = articleTitle;
+    $("#setArticleTitle").value = articleTitle;
+
+    $("#rContent").textContent = reading.article;
+
+    // 默认显示考生信息栏
+    $("#paperInfo").style.display = "flex";
+    $("#setShowInfo").checked = true;
+
+    const qBox = $("#rQuestions");
+    qBox.innerHTML = "";
+
+    if (!reading.questions || reading.questions.length === 0) {
+      qBox.innerHTML = `<div style="text-align:center; padding:50px; color:#888;">${d.emptyQuestions}</div>`;
+      return;
+    }
+
+    reading.questions.forEach((q, i) => {
+      const div = document.createElement("div");
+      div.className = "q-block";
+
+      // 兜底：如果题干为空或只有占位符
+      let qText = q.question || "";
+      if (qText.includes("题干？") || qText === "题干" || qText.length < 3) {
+        qText = I18N_READING.fallbackQuestion.replace("{n}", i + 1);
+      }
+
+      // 👇 增加自动题号逻辑（i + 1）
+      let html = `<div class="q-title">${i + 1}. ${qText}</div>`;
+
+      if (q.type === "single") {
+        let opts = q.options || [];
+        if (opts.length < 4) {
+          while(opts.length < 4) {
+            const letter = String.fromCharCode(65 + opts.length);
+            opts.push(`${letter}. ${d.option}`);
+          }
+        }
+
+        html += `<div class="q-options" id="opts_${i}">`;
+        opts.forEach((opt, j) => {
+          html += `
+            <div class="custom-opt" data-group="opts_${i}" data-val="${j}">
+              <span class="radio-mark"></span>
+              <span class="opt-text">${opt}</span>
+            </div>
+          `;
+        });
+        html += `</div>`;
+      } else if (q.type === "short") {
+        html += `<textarea class="short-textarea" placeholder="${d.shortPh}"></textarea>`;
+        html += `<div class="short-blank" style="display:none; height:100px;"></div>`;
+      }
+
+      div.innerHTML = html;
+      qBox.appendChild(div);
+    });
+
+    // 绑定单选点击逻辑
+    document.querySelectorAll(".custom-opt").forEach(opt => {
+      opt.onclick = () => {
+        const groupId = opt.dataset.group;
+        const groupOpts = document.querySelectorAll(`.custom-opt[data-group="${groupId}"]`);
+        if (opt.classList.contains("selected")) {
+          opt.classList.remove("selected");
+        } else {
+          groupOpts.forEach(o => o.classList.remove("selected"));
+          opt.classList.add("selected");
+        }
+      };
+    });
+
+  } catch (e) {
+    alert(d.error);
+  }
+}
+
+$("#btnExportWord").onclick = () => { window.location.href = `/export_reading_word/${SID}`; };
+document.addEventListener("DOMContentLoaded", loadData);
+</script>
+</body>
+</html>

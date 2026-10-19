@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="{{ lang_tag }}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ paper.name }} · {{ t('app.name') }}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>{{ paper.name }}</h1>
+    {% include "_lang_switcher.html" %}
+    <div class="top-nav">
+      <span class="paper-meta">{{ t('exam.score_label', n='%.1f'|format(paper.total_score)) }}</span>
+      <a href="/">← {{ t('common.back_home') }}</a>
+    </div>
+  </header>
+
+  <form id="examForm" data-pid="{{ paper.id }}">
+    <div id="questionList"></div>
+    <div class="submit-bar">
+      <button type="submit" class="btn-primary btn-lg">{{ t('exam.submit') }}</button>
+    </div>
+  </form>
+</div>
+
+<script>window.PAPER_ID = {{ paper.id }};</script>
+
+<script>
+window.I18N_EXAM = {
+  type_single: {{ t('type.single')|tojson }},
+  type_multiple: {{ t('type.multiple')|tojson }},
+  type_judge: {{ t('type.judge')|tojson }},
+  type_blank: {{ t('type.blank')|tojson }},
+  type_short: {{ t('type.short')|tojson }},
+  judge_t: {{ t('exam.judge_t')|tojson }},
+  judge_f: {{ t('exam.judge_f')|tojson }},
+  ph_blank: {{ t('exam.ph_blank')|tojson }},
+  confirm_submit: {{ t('exam.confirm_submit')|tojson }},
+  load_fail: {{ t('convert.load_fail')|tojson }},
+  submit_fail: {{ t('error.parse_fail')|tojson }},
+  points: {{ t('result.points')|tojson }}
+};
+</script>
+
+<script src="{{ url_for('static', filename='exam.js') }}"></script>
+</body>
+</html>
