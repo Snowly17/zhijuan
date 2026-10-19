@@ -57,23 +57,47 @@ def get_resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 
-def get_data_dir():
+def _dir_writable(path):
+    """真的写一个探针文件，别只信 makedirs 的返回值
+
+    Windows 上遇到过：目录存在、makedirs(exist_ok=True) 不报错，但进程没有写权限，
+    结果 SQLite 报 "unable to open database file"、日志也写不出来，问题很难查。
+    """
     try:
-        if sys.platform == "win32":
-            base = os.environ.get("APPDATA", os.path.expanduser("~"))
-            data_dir = os.path.join(base, "智卷")
-        elif sys.platform == "darwin":
-            data_dir = os.path.expanduser("~/Library/Application Support/智卷")
-        else:
-            data_dir = os.path.expanduser("~/.local/share/智卷")
-        os.makedirs(data_dir, exist_ok=True)
-        return data_dir
-    except Exception as e:
-        # 👇 兜底：如果用户目录不可写，退回到 exe 所在的当前目录
-        print(f"[WARN] 无法创建系统数据目录，回退到当前目录：{e}")
-        fallback_dir = os.path.join(os.getcwd(), "data")
-        os.makedirs(fallback_dir, exist_ok=True)
-        return fallback_dir
+        os.makedirs(path, exist_ok=True)
+        probe = os.path.join(path, ".write-test")
+        with open(probe, "w", encoding="utf-8") as f:
+            f.write("1")
+        os.remove(probe)
+        return True
+    except Exception:
+        return False
+
+
+def get_data_dir():
+    """数据目录：优先系统标准位置，不可写时退到 exe 同级 data/"""
+    candidates = []
+    if sys.platform == "win32":
+        base = os.environ.get("APPDATA") or os.path.expanduser("~")
+        candidates.append(os.path.join(base, "智卷"))
+    elif sys.platform == "darwin":
+        candidates.append(os.path.expanduser("~/Library/Application Support/智卷"))
+    else:
+        candidates.append(os.path.expanduser("~/.local/share/智卷"))
+
+    if getattr(sys, "frozen", False):
+        try:
+            candidates.append(os.path.join(os.path.dirname(sys.executable), "data"))
+        except Exception:
+            pass
+    candidates.append(os.path.join(os.getcwd(), "data"))
+
+    for path in candidates:
+        if _dir_writable(path):
+            return path
+
+    print(f"[WARN] 没有可写的数据目录，回退到 {candidates[-1]}")
+    return candidates[-1]
 
 
 if getattr(sys, "frozen", False):
@@ -1543,6 +1567,9 @@ def export_reading_word(sid):
     )
 
 # ==================== 启动 ====================
+LOG_PATH = None
+
+
 def _pick_port(preferred=5001, tries=20):
     """优先用 5001；被占用就往后找一个空闲端口，避免二次启动直接崩"""
     import socket
@@ -1558,23 +1585,40 @@ def _pick_port(preferred=5001, tries=20):
 
 
 def _setup_log_file():
-    """打包成窗口程序后没有控制台，把 stdout/stderr 落到数据目录的 app.log"""
+    """打包成窗口程序后没有控制台：把 stdout/stderr 落到日志文件。
+
+    注意：日志路径必须多准备几个兜底（数据目录 → exe 所在目录 → 系统临时目录），
+    否则一旦第一个路径不可写，所有 print 都会消失，线上问题无从排查。
+    """
+    global LOG_PATH
     if not getattr(sys, "frozen", False):
         return
-    try:
-        f = open(os.path.join(get_data_dir(), "app.log"), "a", encoding="utf-8", buffering=1)
-    except Exception:
-        class _Sink:
-            def write(self, *a):
-                pass
 
-            def flush(self):
-                pass
-        f = _Sink()
-    sys.stdout = f
-    sys.stderr = f
+    candidates = [os.path.join(get_data_dir(), "app.log")]
+    try:
+        candidates.append(os.path.join(os.path.dirname(sys.executable), "app.log"))
+    except Exception:
+        pass
+    candidates.append(os.path.join(os.environ.get("TEMP") or ".", "zhijuan-app.log"))
+
+    stream = None
+    for path in candidates:
+        try:
+            stream = open(path, "a", encoding="utf-8", errors="replace", buffering=1)
+            LOG_PATH = path
+            break
+        except Exception:
+            continue
+    if stream is None:
+        try:
+            stream = open(os.devnull, "w", encoding="utf-8")
+        except Exception:
+            return
+
+    sys.stdout = stream
+    sys.stderr = stream
     print("\n" + "=" * 50)
-    print(f"[{datetime.datetime.now():%Y-%m-%d %H:%M:%S}] 智卷启动")
+    print(f"[{datetime.datetime.now():%Y-%m-%d %H:%M:%S}] 智卷启动 (log={LOG_PATH})")
 
 
 def open_in_browser(url, delay=2.5):
@@ -1648,7 +1692,10 @@ def main(argv=None):
     if "--browser" not in args:
         try:
             from desktop import run_desktop
-            status = run_desktop(url, port, run_server)
+            status = run_desktop(
+                url, port, run_server,
+                profile_dir=os.path.join(get_data_dir(), "window"),
+            )
         except Exception as e:
             print(f"[WARN] 桌面窗口启动失败：{e}")
             status = "unavailable"

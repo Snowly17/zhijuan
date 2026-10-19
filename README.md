@@ -18,8 +18,17 @@
 | `zhijuan-<版本>-win64-portable.zip` | 便携版：解压后双击 `智卷.exe`，启动最快（无需安装） |
 | `zhijuan-<版本>-win64-setup.exe` | 安装版：装完有开始菜单与桌面快捷方式 |
 
-双击后弹出的是一个**原生窗口**（pywebview + 系统 WebView2 渲染，不是浏览器标签页），
-关掉窗口即退出。数据存在 `%APPDATA%\智卷\quiz.db`，卸载重装不会丢题库。
+双击后弹出的是一个**独立窗口**（不是浏览器标签页），关掉窗口即退出。
+数据存在 `%APPDATA%\智卷\quiz.db`，卸载重装不会丢题库。
+
+窗口按三级降级，哪一级能跑用哪一级，不会因为缺组件就打不开：
+
+1. **pywebview + WebView2**：真·原生窗口（首选）
+2. **Edge / Chrome 应用窗口**：无地址栏的独立窗口，使用专用 profile，不影响日常浏览器
+3. **系统默认浏览器**：兜底
+
+> 数据目录如果不可写（例如放在只读 U 盘），会自动退到 exe 同级的 `data/`。
+> 需要排查环境时运行 `智卷.exe --selftest`，会在 exe 同级生成 `selftest.txt`。
 
 ## 为什么是智卷
 
@@ -48,8 +57,9 @@ venv\Scripts\activate            # Windows；macOS/Linux 用 source venv/bin/act
 pip install -r requirements.txt
 
 # 3. 启动（首次运行自动在 data/ 下建库建表）
-python app.py                    # 默认开原生窗口
+python app.py                    # 默认开窗口
 python app.py --browser          # 强制用浏览器打开（调试或窗口不可用时）
+python run.py --selftest         # 环境自检：打印数据目录/依赖/窗口内核
 ```
 
 窗口模式下不需要记端口；浏览器模式下访问 <http://127.0.0.1:5001>，
@@ -114,10 +124,11 @@ python app.py --browser          # 强制用浏览器打开（调试或窗口不
 ```
 zhijuan/
 ├── app.py                 # Flask 主程序 + 启动入口（原生窗口/浏览器）
-├── desktop.py             # pywebview 桌面壳（原生窗口）
+├── run.py                 # 打包入口（加崩溃兜底与 --selftest 自检）
+├── desktop.py             # 桌面壳：pywebview → Edge 应用窗口 → 浏览器，三级降级
 ├── parsers.py             # 题库文件解析器
 ├── sm2.py                 # SM-2 遗忘曲线算法
-├── migrate.py             # 数据库迁移脚本（仅旧版本升级用）
+├── migrate.py             # 数据库迁移脚本（旧版本才会用到）
 ├── build.py               # 打包脚本（PyInstaller + Inno Setup）
 ├── build_exe.py           # 旧入口，已转调 build.py
 ├── installer.iss          # Inno Setup 安装包定义

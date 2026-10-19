@@ -34,7 +34,7 @@ for _stream in (sys.stdout, sys.stderr):
 APP_NAME = "智卷"
 APP_ID = "zhijuan"
 VERSION = "1.0.0"
-ENTRY = "app.py"
+ENTRY = "run.py"
 DATA_DIRS = ["templates", "static", "i18n"]
 ICON_PNG = os.path.join("static", "icon-512.png")
 ICON_ICO = os.path.join("static", "icon.ico")
@@ -192,7 +192,8 @@ def pyinstaller_args(onefile, console):
         args += ["--hidden-import", h]
     for m in EXCLUDE_MODULES:
         args += ["--exclude-module", m]
-    args += ["--collect-all", "webview"]
+    for pkg in ("webview", "pythonnet", "clr_loader"):
+        args += ["--collect-all", pkg]
     args.append(ENTRY)
     return args
 
