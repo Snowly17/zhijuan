@@ -56,11 +56,28 @@ function renderQuestion(q, idx) {
     <div class="q-head">
       <span class="q-index">${idx + 1}</span>
       <span class="q-type-tag">${q.type_label || typeLabel(q.type)}</span>
+      ${warningsHtml(q.warnings || [])}
       <span class="q-score">${q.score} ${_t('points')}</span>
     </div>
     <div class="q-body">${escapeHtml(q.question)}</div>
     <div class="q-options">${body}</div>`;
   return div;
+}
+
+function warningsHtml(warnings) {
+  if (!warnings || !warnings.length) return "";
+  const labels = {
+    letter_gap: "选项字母缺位",
+    letter_missing: "选项字母缺失",
+    answer_not_in_options: "答案超出选项范围",
+    type_conflict: "题型标识异常",
+    options_missing: "选项区缺失",
+  };
+  const chips = warnings.map(w => {
+    const label = labels[w] || w;
+    return `<span class="q-warn" title="识别存疑：${label}">${escapeHtml(label)}</span>`;
+  }).join("");
+  return `<span class="q-warn-group">${chips}</span>`;
 }
 
 function collectAnswers() {

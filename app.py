@@ -192,6 +192,7 @@ SCHEMA_SQL = """
         options TEXT DEFAULT '[]',
         answer TEXT NOT NULL,
         score REAL DEFAULT 2,
+        warnings TEXT DEFAULT '[]',
         created_at TEXT DEFAULT (datetime('now','localtime'))
     );
     CREATE TABLE IF NOT EXISTS papers (
@@ -632,12 +633,13 @@ def api_upload():
 
     for q in questions:
         db.execute(
-            "INSERT INTO questions (type, question, options, answer, score) "
-            "VALUES (?,?,?,?,?)",
+            "INSERT INTO questions (type, question, options, answer, score, warnings) "
+            "VALUES (?,?,?,?,?,?)",
             (q["type"], q["question"],
              json.dumps(q["options"], ensure_ascii=False),
              json.dumps(q["answer"], ensure_ascii=False),
-             q["score"])
+             q["score"],
+             json.dumps(q.get("warnings") or [], ensure_ascii=False))
         )
     db.commit()
     return jsonify({"ok": True, "count": len(questions)})
@@ -725,6 +727,7 @@ def api_paper(pid):
             "question": r["question"],
             "options": json.loads(r["options"]),
             "score": r["score"],
+            "warnings": json.loads(r["warnings"] or "[]"),
         })
     return jsonify({"ok": True, "questions": out, "name": paper["name"]})
 
@@ -916,8 +919,10 @@ def api_parse_file():
 
     fname = f.filename.lower()
     use_ocr = request.form.get("ocr") == "1"
+    use_ai_fallback = request.form.get("ai_fallback") == "1"
     t0 = time.time()
 
+    is_ocr = False
     try:
         if fname.endswith(".docx"):
             raw_text = parsers.extract_text_from_docx(f.stream)
@@ -928,21 +933,27 @@ def api_parse_file():
             raw_text = parsers.extract_text_from_pdf(f.stream)
             lines = [l for l in raw_text.split("\n") if l.strip()]
 
+            # 扫描件判定：原生文本行数太少 -> 整份走 OCR
             if use_ocr or len(lines) < 50:
-                print(f"[PDF] 启用 OCR（前 20 页测试）…")
                 try:
                     f.stream.seek(0)
-                    raw_text = parsers.extract_text_from_pdf_ocr(
-                        f.stream, max_pages=20
-                    )
-                    print(f"[PDF] OCR 完成")
+                    raw_text = parsers.extract_text_from_pdf_ocr(f.stream)
+                    is_ocr = True
+                    print(f"[PDF] OCR 完成（全文）")
                 except Exception as e:
                     print(f"[PDF] OCR 失败：{e}")
                     if not raw_text.strip():
                         return jsonify({"ok": False, "msg": t('error.scanned_pdf')}), 400
 
-            questions = parsers.parse_question_text(raw_text)
-            questions = parsers._merge_orphan_answers(questions)
+            questions, diag = parsers.parse_question_text_auto(
+                raw_text, is_ocr=is_ocr,
+                ai_fallback=(is_ocr and use_ai_fallback),
+                ai_model=os.environ.get("OLLAMA_MODEL", "qwen2.5:3b"),
+            )
+            if is_ocr:
+                questions = parsers._merge_orphan_answers(questions)
+            else:
+                questions = parsers._merge_orphan_answers(questions)
 
         elif fname.endswith(".json"):
             raw_text = f.read().decode("utf-8", errors="ignore")
@@ -972,7 +983,15 @@ def api_parse_file():
         if now - PARSE_CACHE[k]["created_at"] > PARSE_CACHE_TTL:
             del PARSE_CACHE[k]
 
-    stats = parsers.analyze_qnums(raw_text, questions)
+    stats = (parsers.analyze_qnums_ocr(raw_text, questions) if is_ocr
+             else parsers.analyze_qnums(raw_text, questions))
+
+    # 将 per-question warnings 与分布统计一并返回，供前端高亮“可能需要人工复核”的题目
+    warning_stats = {}
+    if is_ocr:
+        for q in questions:
+            for w in (q.get("warnings") or []):
+                warning_stats[w] = warning_stats.get(w, 0) + 1
 
     return jsonify({
         "ok": True,
@@ -980,6 +999,9 @@ def api_parse_file():
         "count": len(questions),
         "elapsed_ms": int((time.time() - t0) * 1000),
         "missing": stats["missing"],
+        "ocr": is_ocr,
+        "warning_stats": warning_stats,
+        "questions": questions,
     })
 
 
@@ -994,6 +1016,13 @@ def api_parse_ai():
     try:
         if fname.endswith(".pdf"):
             raw_text = parsers.extract_text_from_pdf(f.stream)
+            lines = [l for l in raw_text.split("\n") if l.strip()]
+            if len(lines) < 50:
+                # 扫描件：没有原生文本，必须先 OCR 出文字再交给 AI
+                print("[AI-PDF] 原生文本为空/过少，先做全文 OCR…")
+                f.stream.seek(0)
+                raw_text = parsers.extract_text_from_pdf_ocr(f.stream)
+                print(f"[AI-PDF] OCR 完成，{len(raw_text)} 字符")
         elif fname.endswith(".docx"):
             raw_text = parsers.extract_text_from_docx(f.stream)
         else:

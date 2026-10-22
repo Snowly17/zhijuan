@@ -58,6 +58,9 @@ quiz_ppt_outline.txt
 412eeb87888078ded98aa201322a001d.png
 *.zip
 
+# 私有 Ollama 模型目录（本机缓存，不入库）
+.ollama_models/
+
 # ---------- pip 残留目录 ----------
 pip-build-tracker-*/
 pip-ephem-wheel-cache-*/
@@ -82,3 +85,28 @@ tessdata/
 .coverage
 .pytest_cache/
 htmlcov/
+
+# ---------- 调试/基准脚本与输出（不入库） ----------
+bench_*.py
+bench_*.txt
+bench_*.json
+diag_*.py
+diag_*.txt
+design_icon.py
+design_icon_out.txt
+make_fixtures*.py
+dump_page.py
+e2e_parse.py
+test_ai_fallback*.py
+page12.png
+*.out.txt
+git_*.txt
+gpu_*.txt
+dist_list.txt
+exe_info.txt
+selftest_result.txt
+ollama_*.txt
+compile_check.txt
+build_dir_out.txt
+build_onefile_out.txt
+BUILD_TODO.md

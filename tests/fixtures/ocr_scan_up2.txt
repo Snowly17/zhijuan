@@ -1,0 +1,1580 @@
+
+===== page 0 =====
+1,主机在访问服务器的 web 服务器时，网络层 protocol 字段取值为6 。( A) 【判断
+aa)
+
+ATrue
+
+BFalse
+
+2.某网络工程师在输入命令行时提示如下信息:
+
+Error: unrecognized command found at ‘*' position,
+FRE THES Bee RRB? ( C) 【单选是
+
+人输入命令不明确
+
+B参数类型错
+
+C,没有查找到关键字
+
+DMA BOARS
+
+3.如图所示是管理员在网络中捕获到的三个数据包。下面说法不正确的是? (D) 【单选是
+1
+
+10.0.12.1 10.0.12.2 TCP 50190>telnet [SYN] seq=0 win=8192 Len=0 mss=1460
+
+10.0.12.2 10.0.12.1 TCP teinet>50190 [SYN,ACK] seq=0 Ack=1 win=8192 Len=0
+mas=1460
+
+10.0.12.1 10.0.12.2 TCP 50190>teInet [ACK] seq=1 Ack=1 win=8192 Len=0
+
+斥这三个数据包中都不包含应用层数据
+
+B这三个数据包代表了 TCP HSE ME
+
+C.teinet 客户活使用 50190 端口与服务器建立连接
+
+Ditelnet 服务器的 IP 地址是 10.0.12.1 ，telnet SP ww IP 地址是 10.0.12.2
+4华为AR路由器的命令行界面下，Save命令的作用是保存当前的系统时间 。( B ) 【判断题
+1
+
+ATrue
+
+BFalse
+
+5 ,关于传输层协议说法正确的有? (AC ) 【多选是)
+
+ATCP 连接的建立是一个三次挥手的过程，而 TCP 连接的终止则要经过四次握手
+B.UDP 使用 SYN 和ACK 标志位来请求建立连接和确认建立连接
+
+C .知名庙口号范围为 1-1023
+
+D.UDP 适合传输对时延敏感的流量并且可以依据报文首部中的序列号字段进行重组
+6华为路由器中 tracert 诊断工具梓用来跟踪数据的转发路径? (A) 【判断题】
+ATrue
+
+BFalse
+
+===== page 1 =====
+7.OSPF协议在以下蛙种网络类型中需要选举DR和BDR? (AD) 【多选题】
+Ne
+B点到点类型
+CaBIEA
+D.NBMA
+8.以下关于静态路由说法错误的是? (B) 【单选题】
+人适过网络管理员手动配置
+路由器之间需要交互路由信息
+C不能自动适应网络拓扑的变化
+品对系统性能要求人
+9.IEEE 802.11n 标准支持在有娜些频率下工作? (CD) 【多选题】
+A6GHz
+B.2.5GHz
+C.2.4GHz
+D.SGHz
+LOMTFRFROOMIES, ZEREEH RENAME OWA A ping 通主机 B? (A) [Ab
+Pa
+0 nL es
+Sa eS ae
+SEE ee
+ARTA: ip route-static 0.0.0.0 0.0.0.0 11.0.12.2
+RTB : ip route-static 0.0.0.0 0.0.0.0 11.0.12.1
+BATA: ip route-static 10.0.12.5 255.255.255.252 11.0.12.2
+RTB : route-static 10.0,12.1 255.255.255.252 11.0.12.1
+CATA: ip route-static 0.0.0.0 0.0.0.0 11,0,12.1
+RTB : ip route-static 0.0.0.0 0.0.0.0 11.0.12.2
+D.RTA: ip route-static 10.0,12.5 255.255.255.252 11.0,12.1
+RTB : ip route-static 10.0,12.1 255.255.255.252 11.0.12.2
+
+===== page 2 =====
+(单选题)如下图所示的网络，在路由器输入下列哪些命令可以使主机A能够Ping通主机B?
+®  Router A: ip route-static-10.0, 12.255,255,255,25211.0.12.1
+Router B: ip routestatic-10.0.12.1255.255,255.25211.0.12.2
+  Router Aip route-static 0.0.0.0 0.0.0 11.0.12.1
+Router B:ip route-static 0.0.0.0 0.0.0 11.0122
+© Rewer Ap route stao-10.0.12.255 255 285 25211 0.122
+Router B : ip route-static-10.0.12.255.255.255.25211.0.12.1
+@ Rt Ap reutoetate 0.000 0.00 11.0122
+Router Bip route-static 0.0.0.0 0.0.0 11.0.12.1
+11.VRP RfESFE, LSA SOILL Re RAE ER? (D) 【单选题】
+Adisplay IP routing-table
+Baisplay IP routing-table statistics
+Cdisplay IP routing-table verbose
+Ddisplay IP routing-table protocol static
+12.运行 ospf协议的路由器在完成LSDB 同步后才能达到 FULLARAS? (A) 【判断题】
+ATrue
+BFalse
+13路由器所有的接口属于同一个广播域? ( B ) [HTD
+ATrue
+BFalse
+14.ospf 协议支持以下有此协议类型? (ABCD) 【多选题】
+人点到多点
+B点到点类型
+
+===== page 3 =====
+CJ播类型
+
+DNBMA
+
+15 在 VRP平台使用ping命令时，如果需要指定一个IP地址作为回显清求报文的源地址，
+那么应该使用下面肚一个参数? ( B ) 【单选题】
+
+A-d
+
+B-a
+
+C.-s
+
+D-n
+
+16. FSR osph 协议的报文可以确保 LSA 更新的可靠性? (D) 【单选是】
+ADD
+
+B.LSR
+
+Cc. LSU
+
+D. LSACK
+
+17.OSPF RSA RAM SERA? (ABC) 【多选题】
+
+A 2-way
+
+B. Full
+
+C. Down,
+
+D. attempt
+
+183E4FOSPFENN AE EOD AM Te — Rie? (B) 【判断题}
+ATrue
+
+BFalse
+
+19 动态路由协议能够自动适应网络拓扑的变化? ( A) 【判断题】
+ATrue
+
+BFalse
+
+20如下图所示， 主机A 和主机 B 不能通信。 (A) 【判断题】
+
+ATrue
+
+BFalse
+
+===== page 4 =====
+如下图所示，主机A和主机B不能通信 ()
+
+HOSTA                  HOST B
+
+IP: 10.0.12.1/30          WP; 10.0.12.2/24
+
+MAC: MAC-A            MAC-MAC-B
+AT
+B 错误
+参考答案: B
+
+21.ospf 坊议使用姥种报文清求本地缺少的 LSA? (D) 【单选题】
+ALSACK
+
+BLSU
+
+C.HELLO
+
+DLSR
+
+22 如图信息所示，当此交换机需要转发目的mac地址为5489-98ec-f011的帧时，下面
+描述正确的是? (D) 【单选题]
+
+<Huawei>display mac-address
+
+548938eci8 1 GEO0118 dynamic
+
+人交换机将会发送目标不可达的消息给源设备
+
+B交换机在 mac 地址表中没有找到匹配的条目，所以将会委弃该帧
+C ,交换机需要通过发送请求来发现 mac 地址为 5489-98ec-fO11 的设备
+D 交换机将会在除了收到该帧的端口之外的所有端口泛洪该由
+
+23.根据如图所示的命令输出，下列描述中正确的是? (AD) 【多选题】
+Anterface ClgabitEthernet0/0/1
+
+Port link-type trunk
+port trunk allov-paze vlan 2 to 4094
+
+'
+
+AGigabitEthernet0/O/1 允许VLAN1 通过
+BiGigabttEthernetO/O/1 不允许 VLAN1 通过
+
+===== page 5 =====
+C如果要把 GigabitEthernetO/O/1 变为Access 端口，首先需要使用命令 “undo
+port trunk allow-pass vian all”
+D如果要把 GigabitEthemet0/O/1 389 Access 庙口,首先需要使用命令“undo port
+trunk allow-pass vlan 2 to 4094"
+24 ,根据如图所示的命令，则下列描述中正确的是? ( BD) 【多选题】
+人
+Cioavel-Clenbt tnerenth/0/31 opt} Lie tri      fi
+Cere Cieopttgthernt9/ 0和 站am和 39!)
+AGigabitEthernet0/0/1 #089 PVID 是1
+B.GigabitEthernet0/0/2 # OB PVID 是1
+C.GigabitEthernet0/0/2 端口的PVID 是10
+D.GigabitEthernet0/O/1 #0185 PVID 是10
+25 .如果一个以太网数据帧的Lengthytype=0x8100，下列说法正确的是? ( C ) 【单选是
+】 和这个数据帧的上层一定存在 UDP 首部
+B这个数据帧的上层一定存在 TCP 首部
+C 这个数据帧一定携带了 vlan TAG
+D这个数据帧的上层一定存在IP 首部
+26.交换网络中 STP 协议的桥 ID MTR, SLR MIF ID 的交换机会成为根桥? ( A)
+【单选是】
+4.4096 00-01-02-03-04-DD
+B.32768 00-01-02-03-04-AA
+C.32768 00-01-02-03-04-BB
+D.32768 00-01-02-03-04-CC
+27. LAFF REA LACP 模式选举 active 庙口的说法， 正确的是? (A) 【单选是】
+入先比较接口优先级， 无法判断出较优者继续比较接口编号， 越小越优
+B 只比较接口优先级
+C, 比较设备优先级
+D 只比较接口编号
+28 .现有交换机 mac 地址如图， 下列说法正确的有? (B) 【单选题】
+
+===== page 6 =====
+ao
+A 当交换机重启， iO EthO/0/2 学习到的 mac 地址不需要重新学习
+B,从端口学习到的源 mac 地址为 5489-9885-18a8，目的 mac 地址为 5489-
+989d-1d30 的 数据帧，从 EthO/OV1 端口转发出去
+CAO SEAN mac 地址为 5489-9811-0b49 ，目的 mac 地址为 5489-
+989d-1d30 的 数据帧，从 EthO/OV2 庙口转发出去
+D, 当交换机重启，庙口 EthO/0/3 学习到的 mac 地址需要重新学习
+29 .如下图所示， 所有主机之间都可以正常通信，下列说法正确的有? (AB) 【多选题】
+oS oe;
+A. SWB 的 GO/0/3 学习到 2 mac 地址
+B, SWA 的 GO/O/3 学习到 1 个 mac 地址
+C. SWA 的 GO/O/3 学习到 2 个 mac 地址
+D. SWA 的 GO/O/3 学习到 3 个 mac 地址
+30,以下关于 Hybrid 端口说法正确的有? (A) 【单选题】
+AHybrid 端口可以在出庙口方向将某些 vlan HA tag BI
+B.Hybrid 诺口发送数据帧时，一定揽带vlan tag
+C.Hybrid 端口只接收带 vlan tag 的数据帧
+D.Hybrid 应口不需要 PVID
+
+===== page 7 =====
+31,Telnetlib 中 telnetread_very_eagerl)的作用是非阻塞的该取数据。通常需要和
+time 模块一起使用。( A ) 【判断题}
+
+ATrue
+
+BFalse
+
+32.以下有些不是华为网络设备开放接口? ( C ) 【单选是】
+
+ARE TCONF
+
+BJSON
+
+CXML
+
+D.NETCONF
+
+33运行 STP 协议的交换机，庙口在任何状态下都可以直接转化为 Disabled 状态。(A)
+【判断是
+
+ATrue
+
+B.False
+
+34.IPv6地址2001:ABEF:224E;FFE2;BCC0:CDO0:DDBE:8D58 FAS. (A) (4
+era)
+
+ATrue
+
+B.False
+
+35 使用命令“vlan batch 10 20 “和“valn batch 10 to 20 “，分别能创建的 Van
+
+数量是? (D) 【单选题】
+
+All 和11
+
+B 2和2
+
+C.11 和2
+
+D2和11
+
+36,二层交换机属于数据链路层设备，可以识别数据贝中的mac地址信息，根据mac地址
+转发数据，并将这些mac地址与对应的端口信息记录在自己的mac地址表中。(A ) 【判断
+
+a)
+
+ATrue
+
+BFalse
+
+37.交换机发送的配置 BPDU Ph, MiFID 不可能出现? ( B )【单选题】
+
+A, 8192 00-01-02-03-04-CC
+
+B,，2048 00-01-02-03-04-CC
+
+C, 4096 00-01-02-03-04-CC
+
+===== page 8 =====
+D 0 “00-01-02-03-04-CC
+
+38.如果配置的 ACL规则存在包含关系 ，应注意严格条件的规则编号需要排序笋前，帘松
+条 件的规则编号需要排序靠后，避免报文因命中宽松条件的规则而停止往下继续匹配，从
+而使 其无法命中严格条件的规则。 (A) 【判断题】
+
+ATrue
+
+BFalse
+
+39 网络管理员在华为路由器 RTA 上进行如图所示配置， 若某用户需在认证域“huawei
+” 中进行认证， 则下面描述正确的是? (D) 【单选题}
+
+人将使用“ahentication-scheme aut” 认证
+
+BURHEFE “authentication-scheme au1”认证， 如果“au1”被枉除， 将使用“au2”认证
+C将使用“ahenticatiorr-scheme au2”认证， 如果“au2”被恒除，将使用“au1 ”认证
+D将使用“authenticaliorrscheme au2” 认证
+
+40 ,二层 ACL 的编号范围是? (A) 【单选题】
+
+A.4000-4999
+
+B.2000-2999
+
+C.6000-6031
+
+D.3000-3999
+
+41, BRACL 的编号范围是? (D) 【单选题】
+
+A.2000-2999
+
+B.4000-4999
+
+C.6000-6031
+
+D.3000-3999
+
+42如果报文匹配ACL的结果是“拒绝”，该报文最终被委奔。(B) 【判断题}
+
+ATrue
+
+BFalse
+
+43,DHCP QSL FMEA? ( ABD) 【多选题}
+
+A.DHCP OFFER
+
+B.OHCP REQUEST
+
+===== page 9 =====
+C.DHCP ROLLOVER
+
+D.DHCP DISCOVER
+
+44,.DNS 协议的主要作用? ( C ) 【单选题】
+
+ASCE
+
+B远程接入
+
+C域名解析
+
+D 邮件传输
+
+45.以下也种协议不属于文件传输协议? { C ) 【单选题】
+
+AFTP
+
+BSFTP
+
+CHTTP
+
+DTFTP
+
+46.28 WPA2-PSK 的安全策略才支持使用 TKIP 进行数据加密。( B) 【判断题】
+ATrue
+
+BFalse
+
+47.W-Fi 6 相比于 Wi-FI 5 BUCSAARELISLOIA? (A) 【单选是}
+
+人更高的消耗
+
+BEERS AP 接入终端数
+
+C .更低的传输时延
+
+ORS AS
+
+48.CAPWAP BIS MSS AUR Re RAB S—S. (B) 【判断题】
+ATrue
+
+BFalse
+
+49.FITAP SRR AC 的IP 地址之后首先执行的操作是? (A) 【单选题】
+
+人建立 CAPWAP 限道
+
+电请求配置文件
+
+C ,下载配置文件
+
+D 升级软件版本
+
+SO.STA ZRH) AP 之前需要通过一些报文交互获取 SSID，这些报文为? (ABC) 【多
+选是】
+
+===== page 10 =====
+AProbe Response
+
+BProbe Request
+
+C.Beacon
+
+D.Discovery
+
+51.段路由SR (segment routing) 是基于什么理念而设计的在网络上转发数据包的一种协
+议? (B ) 【单选是】
+
+人策略路由
+
+B源路由
+
+C路由策略
+
+D 目的路由
+
+52,在PPP 中，当通信双方的两册检测到物理链踪激活时， 就会从链路不可用阶段转化到
+链 路建立阶段，在这个阶段主要是通过( C j壕议进行链路参数的协商 【单选题】
+AIP
+
+BLCP
+
+CNCP
+
+DDHCP
+
+53.SNMPv1 定义了5种协议操作。( A) 【判断题}
+
+ATrue
+
+BFalse
+
+54, 管理信息库MIB (management information base) 是一个韦拟的数据库， 这个数据
+库只存在于NMS上。( B ) 【判断题】
+
+ATrue
+
+BFalse
+
+55.IP 报文头部中有一个 TTL 字段， 关于该字段说法正确的是? (A) 【单选题】
+人该字段用于数据包防环
+
+日该字段用于数据包分片
+
+C 该字段用来表示数据包的优先级
+
+D该字段长度为 7 位
+
+下面关于IP报文头部中TTL字段的说法正确的是 { ) 。
+
+AIP报文每经过一台路由器时，其TTL值会被碱1
+
+B IP报文每经过一台路由器时，其TTL值会被加1
+
+===== page 11 =====
+C TTL定义了源主机可以发送数据包的时间间隔
+
+D TTL定义承主机可以发送数据包的数量
+
+参考答案: A
+
+56JPv6 基本报头长度为多少 Byte? (A) 【单选是]
+
+A40
+
+B48
+
+C.32
+
+D.64
+
+57.IPV6 报头中蛙个字段的作用类似于 I|PV4 报头中的 TTL 字段? (A) 【单选题】
+A. hop limit
+
+B, Next header
+
+C. Traffic class
+
+D, Version
+
+58. telnetib 中 telnetread.all( B )的作用时污取所有数据直到 EOF，如果回显没有返
+回 EOF 性一致阳塞。( B ) 【判断是】
+
+ATrue
+
+BFalse
+
+59.8R RE PESNMPHRRD, (CEH AA MOS INMSASE SHB? (D) 【
+单选题】
+
+A161
+
+B163
+
+C.164
+
+D162
+
+60 如果一个接口的MAC地址为00EO-FCEF-OFEC，则其对应的 EUI-64地址为? ( B)
+【单选三】
+
+AD00E0-FCEF-FFFE-OFEC
+
+B.02E0-FCFF-FEEF-OFEC
+
+C.00E0-FCFF-FEEF-OFEC
+
+D,02E0-FCEF-FFFE-OFEC
+
+===== page 12 =====
+如果EUI-64地址CA9E-93FF-FE7B-057B是根据MAC地址计算得到，则其对应的MAC
+地址应该为?
+
+A C89E-9DFF-057B
+
+B A89E-9D7B-057B
+
+C CA9E-9D7B-057B
+
+D C89E-9D7B-057B
+
+SEER: D
+
+61 SHADES OSPRARN MES, OILMB TPM S? (AB) 【多选是
+
+A. 在 ospf 协议视图下输入命令“display this”
+
+B. Display current-configuration
+
+C. Display ospf peer
+
+D. Dis ip routing-table
+
+62.ARP协议能够根据目的PP地址解析目标设备mac地址，从而实现mac地址与|P地吉的
+Beas. (A) 【判断是
+
+ATrue
+
+BFalse
+
+63.VRP界面下,使用命令startup saved-configuration backup.cfg, Ri PRGA)
+时使用backup.cfg文件。( A ) 【判断题】
+
+ATrue
+
+BFalse
+
+64, VRP ASCO EHTS ZO BBE ast Tie ME? { B ) 【单选题】
+
+人通过mini USB口对路由器进行配置
+
+B通过FTP对路由器进行配置
+
+C .通过console口对路由器进行配置
+
+D通过telnet对路由器进行配置
+
+65.当路由器运行在同一个 ospf 区域中时，对它们的 LSDB 和路由表的描述正确的是?
+(AD) 【多选题】
+
+人所有路由器得到的链路状态数据库是相同的
+
+B.J所有路由器得到的路由表是相同的
+
+C 各台路由器得到的链路状态数据库是不同的
+
+D各台路由器的路由表是不同的
+
+66 以下说法正确的是? (A) 【单选题】
+
+===== page 13 =====
+人路由器工作在网络肢
+
+B交换机工作在物理层
+
+C 交换机工作在网络层
+
+D路由器工作在物理层
+
+67.网络管理员在路由器设备上使用Tracertroute功能后，路由器发出的数据包中IPV4
+首部的protocol字段取值为? (A) 【单选题】
+
+Al
+
+B2
+
+C.6
+
+D17
+
+68,下列竺些协议是动态路由协议? (CD ) 【多选题】
+ADirect
+
+Bstatic
+
+C.BGP
+
+DOSPF
+
+69 路由器输出信息如图， 下列说法错误的是? (C) 【单选题】
+AEthemet0/O/O 接口对应的广播地址为 10.0.12.255
+BEthemetO/O/0 接口物理姻路正常
+
+C.Ethemet0/0/0 接口的 MTU 值为 1480
+DiEthemetO/O/0 接口的IP 地址为 10.0.12.1/24
+
+===== page 14 =====
+70 在一台路由器上配置OSPF时， 必须手动进行的配置有? (B) 【单选题】
+
+人指定每个使能 ospf 的接口的网络类型
+
+B创建 ospf Kit
+
+C ,创建ospf 进程
+
+D.Raifl Router ID
+
+(Si) 在一台路由器上配置0SPF时，必须手动进行的配置有 ( ) 。
+
+A 开启OSPF进程
+
+B创建OSPF区域
+
+C 配置Router ID
+
+D 指定每个区域中所包含的网络
+
+参考答案: ABD
+
+71.下图为某一台路由器的路由表，当该路由器收到一个目的|P地址为9.1.1.1的数据包时
+，路由器将根据 9.1.0.0/16的路由进行转发，因为该条路由的扩码长度更长。{ A) 【判
+rea)
+
+ATrue
+
+BFalse
+
+72如果一个网络的网络地址为 10.1.1.0/30，那么它的广播地址是? (A) 【单选题】
+A10.1.1.3
+
+B10.1.1.1
+
+C.10.1.1.4
+
+D.10.1.1.2
+
+73.管理员在R1 上进行了如图配置，但是R1学习不到其他路由器的路由，那么可能的原
+FAR? (ABD) 【多选题】
+
+===== page 15 =====
+人此路由器在配置 ospf 时没有宣告连接邻居的网络
+
+B此路由器没有配置认证功能， 但是邻居路由器配置了认证功能
+
+C此路由器配置时， 没有配置 ospf 进程号
+
+口此路由器配置的区域 ID 和它的邻居路由器的区域ID 不同
+
+74 ,运行 ospf 协议的路由器先达到 FULL 状态，然后进行 LSDB 同步。( B) 【判断题】
+ATrue
+
+BFalse
+
+75.运行 SNMPv1协议的网络设备使用娜种报文类型主动发送告警信息? (A) 【单选题】
+ATrap
+
+BResponse
+
+C.Get-Next Request
+
+D.Get-Request
+
+76,关于如图所示信息描述正确的是? ( C) 【单选题】
+A.GigbitEthernet0/0/0 接口连接了一条错误的线费
+B.GigbitEthemet0/0/0 接口没有配置|P 地址
+
+C.GigbitEthernet0/0/0 接口被管理员手动关闭了
+
+D.GigbitEthernet0/0/0 接口没有启用动态路由协议
+
+77.ospf 的 hello 报文功能是? (AD) 【多选题】
+
+人邻居发现
+
+B 同步路由器的 LSDB
+
+C,更新LSA 信息
+
+DACRE
+
+78某台路由器路由表答出信息如图， 下列说法正确的是? (BD) 【多选是
+
+===== page 16 =====
+
+===== page 17 =====
+从本路由器到达 10.0.0.1 的出接口为 EthemetO/O/1
+B.本路由器到达 10.0.0.1 的出接口为 EthermetO/O/O
+C本路由器到达 10.0.2.2 的出接口为 EthemetOV/O/O
+D本路由器到达 10.0.2.2 的出接口为 EthermetO/O/1
+
+[地直是)某台区由需将由春抱出氏旬如下，下列膏寺正确的星?
+四
+
+GB tence 000 terveotriopyr0.0 122
+
+品 机出有Bi61002205NotHop为0122
+
+国 :msgsas'oo2 awkepprooz2
+
+79,下面关于路由器的主要功能的说法中错误的是? (CD) 【多选题]
+人根据路由表指导数据转发
+
+B通过多种协议建立路由表
+C 实现相同网段设备之间相互通信
+
+D根据收到数据包的源IP 地址进行转发
+80.如果以太网数据帧 Length/type=0x0806，下列说法正确的是? (ABC) 【多选题】
+入此数据帧的目的 mac 地址有可能是 FFFF-FFFF-FFFFF
+B此数据帧为 Ethernet Il ti
+C.此数据帧的源 mac 地址一定不是 FFFF-FFFF-FFFFF
+D.此数据桢为 IEEE802.3 Bi
+
+E .此数据帧的目的 mac 地址一定是 FFFF-FFFF-FFFFF
+81.如图所示的网络中，下列描述正确的是? ( CD )【多选题】
+
+SWA                 RTA                 Swe
+HUB            | i"    ty
+
+===== page 18 =====
+ARTA 和 SWC 之间的网络为同一个冲突域
+BSWA 和 SWB 之间的网络为同一个广播域
+CSWA 和 SWC 之间的网络为同一个冲突域
+DSWA 和 SWC 之间的网络为同一个广播碟
+82 下图中所有交换机都开启了STP协议，假设所有滑口的路径开销信者为200，则 SWD
+的GO/014 庙口收到的配置BPDU报文中包合的根路径开销信是多少? ( D ) 【单先是】
+W\     "Ee
+     Sem |\\\\\
+ic |   /           “Ss   \
+ceil                          it |
+A 600
+B, 200
+co
+D. 400
+83 如图信息是时运行 STP ASEM LAR EROE OTE, RUBLES, TEES
+描述 MRA? (B) 【单先是]
+etojo/1 DEST FORYARDIN    :
+ap/ sg   °
+tBthernet0/0/22 DEST. FORYARDII oe
+gabitithernet0/0/22 DEST |。 FORYARDIBG   cm
+
+bi tEthernet0/0/2   st FORMA ¢
+人此交换机是网络中的根交换机
+B此交换机的优先级为 0
+C此网络中有可能只包含这一台交换机
+D此交换机可能连接了 6 台其它的交换机
+
+===== page 19 =====
+84.如图所示，交换机使用默认参数运行 STP，则下面娜个端口将会被选举为指定端口? (
+A) 【单选题】
+入交换机 A 的 GO/O/1 端口
+BHUB 的 GO/O/1 tO
+C.HUB 的 GO/O/2 tO
+D交换机 A 的 GO/O/2 #0
+85 ,网络管理员在网络中捕获到了一个数据帧，其目的MAC地址是 01-00-5E-AO-B1-
+C3。关于该mac 地址的说法正确的是? (A) 【单选是
+信它是一个组播 MAC 地址
+Be — Me MAC 地址
+C,它是一个非法MAC 地址
+D它是一个播 MAC 地址
+86.如下图所示，所有主机之间都可以正常通信则 SWB 的 MAC 地址表中 MAC 地址
+和请口 的对应关系正确的是? ( C ) 【单选是】
+A. MAC-A GO/O/1
+MAC-B GO/O/2
+MAC-C GO/0/3
+B， MAC-A GO/O/2
+MAC-B GO/0/2
+MAC-C GO/0/3
+C， MAC-A GO/0/3
+MAC-B GO/0/3
+
+===== page 20 =====
+MAC-C GO/O/1
+D， MAC-A GO/O/1
+MAC-B GO/O/1
+MAC-C GO/0/3
+87.LACP 协议优先级如图所示，交换机 A_和交换机 B 采用 LACP 模式的链路肾合，
+并且所 有接口都加入链路肾合组，同时设置最大活动庙口数量为 3，则交换机 A BITS
+端口不是 活动端口? ( D) 【单选是】
+也
+FF了下下
+站
+AGO/O/0
+B.GO/O/1
+C.Go/0/2
+D.GO/o/3
+88.PPPOE SISA Eh RET? (B) 【单选是】
+人发现阶段
+B数据转发阶段
+C 会活阶段
+D会话终结阶段
+89.STP 中选举根庙口时需要考虑以下及些参数? ( BCE ) 【多选题】
+人端口的mac 地址
+B庙口优先级
+C诺口覃位编号, 如 GO/O/
+Dea Dist
+E端口到达根交换机的 cost
+90 ,如下图所示网络，路由器使用子接口作为主机网关的网关IP 地址为 10.0.12.2 ，以
+FAD 些命令可以实现这个需求? (CD) 【多选题】
+
+===== page 21 =====
+Ainterface GigabitEthernet 0/0/0.20
+dotlq termination vid 10
+Ip address 10,0.12.2 255.255.255.0
+arp broadcast enable
+#
+Biinterface GigabitEthemet 0/0/0.10
+dotlq termination vid 10
+Ip address 10.0.12.2 255.255.255.0
+arp broadcast enable
+#
+Cinterface GigabitEthemet 0/0/0.20
+dotiq — termination vid 20
+Ip address 10.0.12.2 255.255.255.0
+arp broadcast enable
+#
+Dinterface GigabitEthemet0/0/0.10
+dotiq — termination vid 20
+Ip address 10.0.12.2 255.255.255.0
+arp broadcast enable
+#
+OMAR AFR LACP 模式选举主动端的说法，正确的是? (BC) 【多选是】
+A 比较接口编号
+昌优先级数值小的优先， 如果相同则比较设备 MAC, ，越小越优
+C 系统优先级数值小的设备作为主动庙
+DIMAC 地址小的设备作为主动庙
+
+===== page 22 =====
+92.如果一个以太网数据帧的type/Length 字段的值为 0x0800，则此数据帧所耳载的
+上层报 文首部长度范围为 20-608 。 (A) 【判断题】
+
+ATrue
+
+BFalse
+
+93.同一台交换机MLANIF接口的|P地址不能相同。( A ) 【判断题】
+
+ATrue
+
+BFalse
+
+94. LF BRS SERB Ut HWTACACSIAIE? (A) 【单选题}
+A.authentication-mode hwtacacs
+
+B.authentication-mode none
+
+C.Authorization-mode hwtacacs
+
+D.Authorization-mode local
+
+95 ,主机使用 IP 地址 192.168.1.2 访问 Internet 一点要经过 NAT . (A) 【判断题】
+ATrue
+
+BFalse
+
+96.二层 ACL可以匹配源MAC、目的MAC、源ip、目的|P等信息。( B) 【判断题】
+ATrue
+
+BFalse
+
+97.LAFRFMPLSEA PSP ERM? (AB) 【多选】
+
+AS 位存在于每一人 MPLS ”报文头中
+
+B, 用来标志本标签后是否还有其他标签，0 表示是，1 表示不是
+
+C.S 位在帧模式中只有 1bit，在信元模式中有 abit
+
+O, 用来标志本标签后是否还有其他标签，1 表示是，0 表示不是
+
+===== page 23 =====
+ie
++ IPH MPLSHEZ A, SHELA GELSREE A MPLSSLES (SLOUMPLSERSE) ，形成一个MPLS标等抠文.
+一个村恩报文可以包合一个或多个MPLS标签,
++ ME (abel) : 用于横再标等厦，长诬20ott，
+“pm (Eapermentl Use): HBA Cos (Cin of Server)
+sevens [=e] a [ee] saan
+ess eee) |和RE
+‘RGAE, Eline, OR, STM
+coe
+ee ee
++ TTL (Time Tove) ; 用于当网站出现环中时，防止昧等形
+=                    RMN, SORTA TTT ATTN,
+time,
+98.如下选项中的配置，哪些属于二层ACL? ( BCD ) 【多选题】
+Arule 25 permit source 192.168.1.1 0.0.0.0
+Burule 10 permit 12-protocol arp
+Crule 25 permit source-mac 0203-0405-0607
+D.rule 25 permit vlan-id 100
+99.管理员在Router 上进行了如图配置，那么连接在该路由器的G1/0/0接口下的一台主机
+， 能够通过 DHCP获到到什么样的|P地址? (A) 【单选是】
+
+===== page 24 =====
+en a
+e   ane
+0                         -“
+sabia fF > $0         _       ' tne ema
+ATZAH RABY IP 地址属于 10.10.10.0/24 网络
+B该主机获取的 |P 地址属于10.20.20.0/24 网络
+CC,该主机获取的IP 地址可能属于 10.10.10.0/24 网络，也可能属于 10.20.20.0/24
+网络
+D,该主机获取不到地址
+100.网络中部署了一台DHCP服务器，但是管理员发现部分主机并没有正确获取到
+DHCP 服务器所指定的地址，请问可能的原因有蛙些? (BCD ) 【多选题】
+人部分主机无法与该 DHCP 服务器正常通信，这些主机客户尝系统自动生成了
+127.254.0.0 范围内的地址
+B, 网络中存在另外一台工作效率更高的 DHCP 服务器
+C ,部分主机无法与该 DHCP 服务器正常通信，这些主机客户庙系统自动生成了
+169.254.0.0 范围内的地址
+DDHCP 服务器的地址池已经全部分配完毕
+101WPFi6 所对应的IEEE802.11 标准为? (C) 【单选是】
+AIEEE802.11au
+BIEEE802.11ac
+CIEEE802.11 ax
+DIEEE802.11 at
+102,WiFi6 实际是指IEEE802.11ax 标准。( A ) 【判断题}
+ATrue
+BFalse
+103,RD2E WLAN 安全策略支持 open 方式的链路认证方式? ( ABCD) 【多选题}
+A.WPA2-802.1X
+BWPA
+CWPA2-PSK
+
+===== page 25 =====
+DWEP
+
+104， 2.4GHz 频段中的14个可用频段不存在信道重覃 。( B ) 【判断题】
+ATrue
+
+BFalse
+
+105.当 AP 和 AC 处于不同的三层网络时，推荐使用何种方式让 AP 发现 AC? (AC) 【
+单选是】
+
+ADNS
+
+BAP 上手动指定
+
+C.DHCP
+
+Dat
+
+106 数据链路层使用PPP封装，链踪两端的|P地址可以不在同一个网段。( A ) 【判断题】
+ATrue
+
+BFalse
+
+107.FIT AP BILIARHRR AC 独立进行工作。( B ) 【判断题】
+
+ATrue
+
+BFalse
+
+108.SNMP 报文是通过 UDP 来承载的。{ A) 【判断题】
+
+ATrue
+
+BFalse
+
+109 .网络管理系统通过 SNMP 协议只能查看设备运行状态而不能下发配置 (B) 【判
+ea)
+
+ATrue
+
+BFalse
+
+TIOIPVG 地址包含以下聊些类型? (ABC) 【多选题】
+
+信任播地址
+
+B组播地址
+
+C单播地址
+
+D广播地址
+
+111JPV6 地址总长度为多少 bit? ( C )【单选题】
+
+A64
+
+B96
+
+===== page 26 =====
+C.128
+
+D.32
+
+112使用 SNMPv1 协议管理网络设备时，网管系统使用下列肝条命令完成对网络设备
+的配 置? ( C ) 【单选题】
+
+AGet-Request
+
+BResponse
+
+C.Set Request
+
+D.Get-Next Request
+
+11S ACCES NFV 的基础， 以下关于志氢化的特点说法正确的是? (ABCD) 【多
+8) A eS: 同一个物理服务器上的虚拟机相互请高
+
+B分区: 可以在单个物理服务器上同时运行多个虑拟机
+
+CHR: 虐拟机都是共享操作系统的，通过命令空间实现封装
+
+D硬件独立: 虚拟机和硬件解耦，支持岂拟机在服务器之间迁移
+
+114,下面选项中关于 NFV 架构的厂念描述正确的是? (ABCD) 【多选题】
+AVNFM, 筷拟网络功能管理，负责 VNF 的生命周期管理
+
+B.NFVO(NFV Orchestrator)，负责业务的编排
+
+C.MANO 由 NFVO 、VNFM 和VIM 组成
+
+D.VIM(Virtualised Infrastructure Manager)虑拟资源管理，负责实现基础设施的上拟化
+115 .以下也个命令可以修改设备名字为 huawei? (A) 【单选题}
+
+Asysname huawei
+
+Brename huawei
+
+C.do name huawei
+
+Dhostname — huawei
+
+116在 VAP FAL, ALS TRS L—RABRS? (AB) 【多选是
+ACuHP
+
+B上光标
+
+CCul+U
+
+D左光标
+
+117VRP 操作平台对于输入命令不完整使用下列哪条信息提示? ? (C) 【单选是】
+Arror: Too many parameters found at 从”position
+
+B.Error: wrong parameter found at ‘*" position
+
+===== page 27 =====
+C.Error: incomplete command foundat 人”positlon
+
+D.Error: ambiguous command foundat  ‘*" position
+
+118 .由于 TCP 协议在建立连接和关闭连接时都采用三次握手制，所以 TCP 支持可靠
+
+传输。( B ) 【判断题】
+
+ATrue
+
+BFalse
+
+119VRP 系统中的登录超时时间只能在 VTY 接口下设置。( B) THEE)
+
+ATrue
+
+BFalse
+
+120, LATHRD HUBS ACL BILATCRRE MAIR S? (A) 【单选题】
+
+入高级ACL
+
+Bae ACL
+
+CoB ACL
+
+D. 中级ACL
+
+121 如下图所示的网络，路由器从主机 A 收到目的 |P 地址为 11.0.12.1 的数据包，
+
+这个数据包经路由器转发后， 目的 mac 和目的 |P 分别为? ( D ) 【单选题】
+
+BORN Re co vert
+OA ato Ke alae ala
+
+My ay Pee Ml Se ki, ，  CN 2
+
+A. MAC-D 10.0.12.2
+
+B, MAC-D 11.0.12.1
+
+C. MAC-C 11.0.12.1
+
+D. MAC-B 11.0.12.1
+
+122. 企业场景下的 WLAN 部署方案中一般会涉及旦些设备? (ABC) [Sze]
+
+AACIAccess Controller)
+
+BAP
+
+CPoE 交换机
+
+DCPE
+
+123 .如图所示路由表，下列说法正确的是? (AC) 【多选题】
+
+===== page 28 =====
+人路由器从 Ethemet0/0/0 转发目的|P 为 10.0.2.2 的数据包
+B, 目的网络 10.0.3.3/32 的 NextHop 非直连，所以路由器不会转发目的 IP 地直为
+10.0.3.3 的数据包
+C 路由器从EthemetO/O/0 转发目的IP 为 10.0.3.3 的数据包
+口路由器从 EthemetO/0/0 转发目的|P 为 10.0.12.1 的数据包
+124 为检测 CAPWAP 隧道的连通状态，在 CAPWAP 隧道建立之后 AC BARI IIE
+CAPWAP 报文进行探测? (AB ) 【多选是】
+AKeepalive
+BEcho
+C.DPD
+D.Hello
+125 如下图所示的网络，所有路由器运行0SPF协议，链路上方为Cost值的大小，则RA
+到这网络10.0.0.018的路径为?( D ) 【单先是】
+-     a=         a
+fs        =
+一
+oer et
+SSeS 闻窒一aa
+—
+A100
+B70
+C.20
+D.60
+
+===== page 29 =====
+如下图所示的网络，所有路由器运行0SPF协议，链路上方为Cost什的大小，则RA到这网
+络10.0.0.0/8的路径为?
+?9       Vv       So
+Router B
+<                 oo              Nip 10.0.0.0/8
+2 一
+Router C
+A ABD
+BRA无法到达10.00.0/8
+C. AD
+D AC-D
+SEER: D
+126 如下图所示，下列说法正确的是? (C ) (HIE)
+出       MAC-B
+信主机A 可以ping 通主机
+B. 只有把主机 A 和主机 B 的掩玛设置为一致，主机 A_和主机 B 才能通信
+C.主机A 和主机 B 的 IP 地址六码b 不同，所以主机 A 和主机 B 不能通信
+D.主机 A 和主机 B 的广播地址相同
+127.当两台0SPF路由器形成 2-WAY和邻居关系时，LSDB己完成同步。( B) 【判断题】
+ATrue
+BFalse
+
+===== page 30 =====
+128 如下图所示的网络，主机A没有配置网关，主机B存在网关的ARP缓存，下列说法
+
+正确的有? ( ABD ) 【多选题】
+
+人       Host B
+WP100721/24 1)                 1P:11.0.12.1/24
+MAC MACA |  1 ae          GW:11.0.122
+ieee. tiiti          MAC MAC-B
+
+人在路由器GO/0/1端口开启ARP代理，则主机A可以和主机B遂信
+
+B和主机 B 发送目的|P 地址为 10.0.12.1 的数据包可以转发到主机A
+
+C主机A 发送目的|P 地址为 11.0.12.1 的数据包可以转发到主机B
+
+D主机A和主机B不能双向遂信
+
+129 下列配置默认路由的命令中，正确的是? ( D ) 【单选是]
+
+A. [huaweijp route-static 0.0.0.0 0.0.0.0 0.0.0.0
+
+B, [huaweilip route-static 0.0.0.0 255.255.255.255 192.168.1.1
+
+C. [huawelSerialO]ip route-static 0.0.0.0 0.0.0.0 0.0.0.0
+
+D [huaweilip route-static 0.0.0.0 0.0.0.0 192.168.1.1
+
+130某公司申请到一个 C 类 |P 地址段，需要分配给 8 个子公司，最大的一个子公司
+
+有 14 台计算机，不同的子公司必须在各自不同的网自中，则子网掩码应设为? (C) 【
+
+单选题]
+
+A255.255.255.192
+
+B.255.255.255.128
+
+C.255.255.255.240
+
+D.255.255.255.0
+
+131.0SPF 协议使用那种居态表示邻居关系已经建立? ( C ) 【单选是】
+
+A. Completed
+
+B. Down
+
+C. 2-way
+
+D Attempt
+
+132.网络管理员希望能够有效利用 192.168.176.0/25 网自的 |P 地址。现公司市场
+
+部门有 20 个主机, 则最好分配下面哪个地址段给市场部? (C) 【单选是1
+
+A192.168.176.160/27
+
+===== page 31 =====
+B.192.168.176.0/25
+C.192.168.176.96/27
+D192.168.176.48/29
+133 .如果一个网络的网络地址为 192.168.1.0，那么它的广播地址一定是
+192.168.1.255。( B) 【判断题】
+ATrue
+BFalse
+134OSPF协议DR和BDR的作用有? (AD) 【多选题】
+人减少邻接关系的数量
+B,减少邻接关系建立的时间
+C减少 OSPF 协议报文的类型
+D .减少链路状态信息的交换次数
+135.如下图所示，下列交换机的姥个端口会处于阻塞状态? (C) 【单选是】
+了 ie                 eae
+‘     cued      A
+“4  pe oxce
+ASWC 的GO/O/2
+BSWA 的 GO/O/3
+CSWC #8 GO/O/1
+D.SWB 的GO/O/3
+136.Access 类型的庙口在发送报文时,会( C )。【单选题】
+入打上本庙吕的 PVID 信息 ， 然后再发送出去
+Bask Tag 的报文
+C,刊离报文的 VLAN 信息，然后再发送出去
+D添加报文的 VLAN 信息，然后再发送出去
+137.RSTP 协议不包括以下孚个端口状态? ( D ) 【单选题】
+AForwarding
+B.Leaming
+C.Discarding
+
+===== page 32 =====
+DBlocking
+138 参考下图中单避路由的配置，可以判断即使在R1的子接口上不开启ARP代理, 行政
+部门与财务部门之间也能够互访。
+|    |
+A对
+Be
+SEER: B
+139 交换机时个端口配置信息如图， 则此端口的 PVID 为? (D) 【单选题】
+A100
+B2
+C4
+D1
+交换机某个端口配置信息如下，则此端口在发送携带有些VLAN的数据帧时剂离VLAN
+TAG?
+
+===== page 33 =====
+#
+interface GigabitEthernet0/0/1
+port hybrid tagged vlan 2 to 3 100
+port hybrid untagged vlan 4 6
+#
+A4, 5,6
+B4, 6
+C1,4,6
+D1,4,5,6
+参考答案: C
+交换机某个庙口配置信息如下，则此端口发送状带姥个VLAN TAG的数据帧时，剥高
+VLAN TAG?
+加
+interface GigabitEthernet0/0/1
+port link-type trunk
+port trunk pvid vlan 10
+port trunk allow-pass vlan 10 20 30 40
+&
+A10
+B20
+C30
+D40
+SEER: A
+140.24 SSS OED, FFUUETERRBIE? (CD) 【多选题】
+
+===== page 34 =====
+er of viens is : 5                                                   {
+ur:      CD)     GEO/D/40D)    20/0/56)    20/0/6)
+re    i      ‘>      B0/0/8«D)      GRO/0/9D)      B0/0/10(D)
+- GBO/O/11 CD)    20O/0/120D)    OID)    CEOVO/140D)
+<     1S (D)    B0/0/16(D)    CEOs/O/T®)    GEO/O/1SCD)
+0    9D)    620/0/200)    20/0/21)    20/0/22)
+680/0/23(D)    680/0/24)
+oo
+caoyomttmp     Gaoveztm
+ nw aN                   adi  a
+a ete           ees |
+入交换机 GEO/O/1 端口在发送 VLAN20 的数据帧时，不携带 VLAN TAG
+B,交换机 GEO/O/2 端口在发送 VLAN20 的数据帧时，携带 VLAN TAG
+C 交换机 GEO/O/1 SOE AGE VLAN10 的数据帧时，不携带 VLAN TAG
+D用户手工创建了 4 个 VLAN
+141.如果一个以太网数据帧的 Length/Type=0x8100 ，那么这个数据帧可能是由以下哪
+种端口发出的? (AB) 【多选题】
+人交换机 Trunk 类型的庙品
+B.交换机 Hybrid 类型的端口
+C .交换机 Access 类型的端口
+D.路由器的 Serial 接口
+142.Eth-Trunk两庙的负载分担模式可以不一致。( A) 【判断题】
+ATrue
+BFalse
+143.RSTP 中处于 Discarding 状态下的端口，虽然会对接收到的数据帧做委弃处理，
+但可以 根据该端口收到的数据帧维护 MAC 地址表。( B) 【判断题】
+ATrue
+BFalse
+144 .网络管理员在三层交接机上创建了 VUNN, SHER VLAN 的虚拟接口下配置了|IP
+地址。 当使用命令“display ip interface briaf ”查看接口状态时，发现 VLANIF 10
+接口处于 down 状态，则应该通过怎样的损作来使得 VLANIF 10 接口恢复正常? B)
+【单选题】
+AE BLANIF 10 接口下使用命令“undo shutdown”
+
+===== page 35 =====
+B将一个状态必为 UP 的物理接口划进 VLAN 10
+
+CC将任意物理接口划进VLAN 10
+
+D将一个状态必须为 Up 且必须为 Trunk 类型的接口划进 VLAN 10
+145.当采用 LACP 模式进行链路紧合时，华为交换机的默认系统优先级是? ( D ) 【单
+选是
+
+A36864
+
+B.24576
+
+C.4096
+
+0.32768
+
+146,下面关于二层以太网交换机的描述，说法不正确的是? (C) 【单选是】
+
+信二层以太网交换机工作在数据链路层
+
+B能够学习 MAC 地址
+
+C, 需要对所转发的报文三层头部做一定的修改，然后再转发
+
+D按照以太网帆二层头部信息进行转发
+
+147.如图所示，网络管理员在SWA与SWB上创建VLAN2，并将两台交换机上连接主机
+的庙口配置为Access端口，划入VLAN2 。得 SWA的GO/O/1与SWB的GO/O/2配置为
+Trunk淇口，允许所有VLAN通过 。则要实现两台主机间能够正常通信，还需要? (B) 【
+单选题】
+
+人配置SWC上的GO/O/1为trunk庙口且人允许VLAN 2通过，GO/O/2庙口设置为access
+端口, PVID 为 2
+
+B在SWC上创建VLAN2 ，忌置GO/0/1和GO/O/2为trunk庙口，且允许MLAN2通过
+C在SWC上创建VLAN2即可
+
+D尼置SWC上的GO/O/1为teunk庙品目允许VLAN 2通过即可
+
+148 在 RSTP 标准中，为了提高收敛速度，可以将交换机直接与终端相连的庙口定义
+为? (D ) 【单选是】
+
+人快速端口
+
+===== page 36 =====
+BAGO
+
+C 备份应品
+
+Dino
+
+149 TEPPER SSE OK PME, OLE ATR PURSE BORE? ( B) 【单选题
+1
+
+AVRRP
+
+BSTP
+
+‘CARP
+
+DUDP
+
+150 如下图所示网络，所有交换机开启 STP 协议。关闭 SWA 的 GO/O/2 OBR
+BPDU 的发送功能， SWC的 GO/O/1重新收全成为根庙口，关于此过程，下列说法正确
+的有? (ABCD) 【多选题]
+
+ASWB 向 SWA 转发 TCN BPDU
+
+B, SWB 向 SWC 发送 TCA 置位的配置 BPDU
+
+C. SWC 向 SWB 发送TCN BPDU报文
+
+D.SWA 发送 TC 置位的配置 BPDU
+
+151 如下图所示的网络，从安全角度考虑，路由跨A 拒接从 GO/O/1 接口收到的
+OSPF 报文、ICMP 报文，以下姥些命令可以实现这个需求? ( ABD ) 【多选是】
+
+===== page 37 =====
+Aacl number 3000
+
+rule 5 deny 89
+
+rule 10 deny icmp
+
+#
+
+interface GigabitEthernet0/0/1
+
+traffic-filter inbound acl 3000
+
+#
+
+Bacl number 3000
+
+rule 5 deny 89
+
+rule 10 deny 1
+
+#
+
+interface GigabitEthernet0/0/1
+
+traffic-filter inbound acl 3000
+
+#
+
+Cacl number 2000
+
+rule 5 deny 89
+
+rule 10 deny 1
+
+#
+
+interface GigabitEthemet0/0/1
+
+traffic-filtet inbound acl 2000
+
+#
+
+Dacl number 3000
+
+rule 5 deny ospf
+
+rule 10 deny icmp
+
+#
+
+interface GigabitEthernet0/0/1
+
+traffic-filtet inbound acl 3000
+
+#
+
+152.以下关于 ACL 的匹配机制说法正确的有? ( ABCD ) 【多选题】
+ASU ACL 不存在，则返回 ACL 匹配结果为;不匹配
+B如果一直查到最后一条规则，报文仍未匹号上，则i返回 ACL 匹配结果为;不匹配
+CAREER, ACL 中编号最小的规则开始查找，一旦匹配规则 ，停止查询后续规则
+
+===== page 38 =====
+D无论报文匹配 ACL 的结果是“不匹”、“人允许 ”还是“拒绝”，该报文最终是被允许
+通过还 是拒绝通过，实际是由应用 ACL 的各个业务模块来快定
+153. 如图所示，路由器 R1 上部署了静态 NAT 命令，当 PC 访问互联网时，数据包
+中的目的地址不会发生任何变化。( A) 【判断是}
+rc      ayoo gree GENO
+192 168.02      202.1012 .          四
+192.168.0.2                                  202.10.1.1
+[R1]intert ace Gigabitéthernet1/0/0
+[R1-Gigabitfthernet 1/0/0 ip address 192.168.0.1 255.255.255.0
+’
+[Ri }interface Gigabitethemet 2/0/0
+[R1-Gigabst Ethernet 2/0/Ofip address 202.10.1.2 255.255.255.0
+[R2}nat static global 202. 10.1.3 inside 192.168.0.2 netmask 255.255.255.255
+[R21] ip route-static 0.0.0.00.0.0.0 202.10.1.1
+ATrue
+BFalse
+154.LA FADE ACL 不能匹配网络层信息 ? ( B ) 【单选题】
+人基本ACL
+BoB ACL
+CBP ACL
+D高级 ACL
+155某台路由器 ACL 置信息如图，下列说法正确的是? (C) 【单选题】
+AIP 地址为 192.168.1.254 的数据包相 permit 规则匹配
+B, IP 地址为 192.168.1.1 和 192.168.1.254 的数据包被 permit 规则匹配
+C. HIP 地址为 192.168.1.1 BISBAL permit 规则匹配
+D. HIP 地址为 192.168.1.1 BIRGER deny 规则匹配
+156.DHCP DISCOVER报文的主要作用是? (B) 【单选题】
+人 服务器对REQUEST报文的确认响应
+B. 客户庙用来寻找DHCP服务器
+
+===== page 39 =====
+C, 客户请请求配置确认，或者续惜期
+
+D, DHCP服务器用来响应DHCP DISCOVER报文，此报文携带了各种配置信息
+
+157理员在路由器上做了如图配置，同时管理员希望给 DHCP 地址指定一个较短的租
+期 ， RIOR RS? (C) 【单选题】
+
+ALease0
+
+B.Dhep select relay
+
+C.Lease day 0 hour 10
+
+D.Lease 24
+
+‘FS AABN ob S TES chia bt Ret TDHCPARS ae ip pool poo11 netword
+10.10.10,0 mask 255.255.255.0 gateway-List 10.10.10.1 同时管理员希望给DHCP
+地址指定一个较短的租期，请问应该使用如下取条命令?
+
+Adhcp select relay
+
+BLease 24
+
+CLease0
+
+DLease day 1
+
+参考答案: D
+
+158.UA FRDEE IEEE 802.11 标准支持工作在 5GHz 频段? ( ABC ) 【多选题】
+A802.11n
+
+B.802.11ax
+
+C.802.11a
+
+D.802.119 (802.11g只能工作在2,4GHz频段)
+
+159 国家码的配置会影响实际传输使用的频率以及最大传输功率 。( A) 【判断题】
+ATrue
+
+BFalse
+
+160.CAPWAP 协议规定了 AC 与 AP 之间的通信标准， 以下关于 CAPWAP 协议说法
+正确的是? (C ) 【单选题}
+
+ACAPWAP 是基于 TCP 传输的应用层协议
+
+BCAPWAP 为减少对 AP 的负担,使用一个隧道同时进行控制报文、数据报文的传输
+C.AP 可以将用户的数据报文封装在 CAPWAP 中交由转AC 转发
+
+D 为建立 CAPWAP 隧道，FIT AP 只能通过广播形式的报文发现 AC

@@ -882,6 +882,23 @@ form input[type="file"] { font-size: 13px; margin-bottom: 8px; }
   border-radius: 4px;
 }
 
+/* 答题页内联警告芯片 */
+.q-warn-group {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+}
+.q-warn-group .q-warn {
+  margin: 0;
+  padding: 2px 8px;
+  background: #fff8e6;
+  border: 1px solid #f39c12;
+  font-size: 11px;
+  color: #8a6d3b;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+
 /* ---------- OCR ---------- */
 .ocr-toggle {
   display: inline-flex;
