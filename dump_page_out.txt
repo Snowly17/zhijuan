@@ -1,3 +1,0 @@
-﻿warning: The `fitz` API is deprecated and will be removed in future. Use `import pymupdf` instead.
-page rect: Rect(0.0, 0.0, 446.25, 630.75)
-saved page12.png 714 x 1010
