@@ -1,0 +1,2 @@
+﻿pages=12 time=45.5s -> C:\Users\33458\Desktop\�Ǿ�\tests\fixtures\ocr_scan.txt
+baseline written

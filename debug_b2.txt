@@ -1,0 +1,52 @@
+
+===== block 2 =====
+  OPT idx=1 letter=E str=1 text='rror: unrecognized command found at “*" postion.'
+  OPT idx=3 letter=A str=1 text='A So'
+  OPT idx=4 letter=B str=1 text='参数类型错'
+  OPT idx=6 letter=D str=1 text='答入命令不完整'
+  explicit answer = None
+  best run mode=contiguous letters=['A', 'B']
+  stem = '某网络工程师在输入命令行提示如下信息: Error: unrecognized command found at “*" postion. 对于该提示信息说法正确的是? ( C ) [HEN]'
+  tail = '在输入命令行提示如下信息: Error: unrecognized command found at “*" postion. 对于该提示信息说法正确的是? ( C ) [HEN]'
+  ans marks = ['C']
+
+===== block 3 =====
+  OPT idx=7 letter=C str=1 text='iteinet 客户庙使用 50190 SOSH ARETE'
+  OPT idx=8 letter=D str=1 text='iteinet 服务器的 |P 地址是 10.0.12.1 ，teinet SHED IP 地址是 10.0.12.2'
+  explicit answer = None
+  best run mode=contiguous letters=['C', 'D']
+  stem = '如图所示是管理员在网络中撒获到的三个数据包。下面涪法不正确的是? (D) PRE 1 Source destination protocol info 10.0:12.1 10.0122 1CP50190>tenet [SIN] 5 10.0.122 10.0.2. TCP telnet>50190[SYN,ACK] se9-0 Ac sa60 10.012110.0122TCps0lg0>tel'
+  tail = '50190[SYN,ACK] se9-0 Ac sa60 10.012110.0122TCps0lg0>telnet[AGqd seqrl Acird winrBl92 Len=O'
+  ans marks = []
+
+===== block 8 =====
+  OPT idx=1 letter=A str=1 text='通过网络管理只手动配置'
+  OPT idx=2 letter=D str=1 text='RT,'
+  OPT idx=4 letter=C str=1 text='对系统性能要求低'
+  explicit answer = None
+  best run mode=weak letters=['A']
+  stem = '以下关于牌坊路由说法错误的是? (8) [RN]'
+  tail = '以下关于牌坊路由说法错误的是? (8) [RN]'
+  ans marks = []
+
+===== block 22 =====
+  OPT idx=2 letter=H str=1 text='uawei>display macaddress'
+  OPT idx=6 letter=A str=1 text='交换机将会发送目标不可达的消息给源设备'
+  OPT idx=7 letter=B str=1 text='交换机在 mac 地址表中没有找到本的条目，所以将会委革该由'
+  OPT idx=8 letter=C str=2 text='交换机需要通过发送清求来发现 mac 地直为 5489-98ec-fO11 的设备'
+  OPT idx=9 letter=D str=1 text='交换机将会在除了收到该村的许口之外的所有庙口泛洪该'
+  explicit answer = None
+  best run mode=contiguous letters=['A', 'B', 'C', 'D']
+  stem = '如图信息所示，当此交换机素要转发目的mac地址为5489-98ec-f011的由时，下面 描述正确的是? (D ) RE) Huawei>display macaddress MAC Address VANNSV Leamned-From Type 5489.98ecf018 “1全 GEO/ONB dynamic Total items disolaved = 1'
+  tail = 'dress VANNSV Leamned-From Type 5489.98ecf018 “1全 GEO/ONB dynamic Total items disolaved = 1'
+  ans marks = []
+
+===== block 39 =====
+  OPT idx=4 letter=A str=1 text='将合用 “authentication-scheme au1 "认证'
+  OPT idx=5 letter=B str=1 text='将使用 “authentication-scheme aut” TAWE, ROSE “aut” MIN, 将使用 “a'
+  OPT idx=7 letter=D str=1 text='将使用“authentication-scheme au2" 认证'
+  explicit answer = None
+  best run mode=contiguous letters=['A', 'B']
+  stem = '网络管理员在华为路由器 ATA 上进行如图所示配置， 若革用户虽在认证域 “huawei “ 中进行U证，则下面入术正确的是? (D) [APA] ‘domain-huavet Jauthentication-schene aul ‘domalrrbuawet Jauthentication-schene au2'
+  tail = ' [APA] ‘domain-huavet Jauthentication-schene aul ‘domalrrbuawet Jauthentication-schene au2'
+  ans marks = []

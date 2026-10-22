@@ -1,0 +1,11 @@
+﻿warning: The `fitz` API is deprecated and will be removed in future. Use `import pymupdf` instead.
+[sequential] 40 pages in 59.5s (1.49s/page)
+[sequential] 235 pages => 350s
+[parallel x8] 40 pages in 9.9s (0.25s/page) speedup=6.02x
+[parallel x8] 235 pages => 58s
+[consistency] pages differing between seq and par: 0/40
+[write] tests/fixtures/ocr_scan_up2.txt
+[parse] OLD n=2
+[parse] NEW n=88 diag={'lines': 1067, 'cjk_doc': True, 'candidates': 145, 'resolved': 143, 'questions': 88, 'with_warnings': 68}
+[parse] NEW qnums (88): [1, 2, 4, 5, 6, 7, 12, 15, 20, 22, 25, 26, 27, 28, 29, 30, 31, 33, 34, 35, 36, 37, 38, 39, 42, 48, 51, 52, 54, 58, 60, 62, 63, 65, 67, 69, 71, 72, 73, 74, 75, 78, 80, 81, 82, 85, 86, 87, 90, 92, 95, 96, 97, 99, 100, 102, 105, 106, 107, 109, 112, 114, 115, 116, 118, 121, 124, 125, 126, 127, 128, 130, 132, 133, 135, 139, 141, 143, 146, 147, 148, 149, 150, 155, 157, 158, 159, 160]
+[write] tests/fixtures/baseline_up2.txt

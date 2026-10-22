@@ -1,0 +1,35 @@
+﻿.\venv\Scripts\python.exe : test_mixed_list (test_parsers_ocr.TestAiPayloadCoercion.test_mixed_list) ... ok
+所在位置 行:1 字符: 472
++ ... 0.1:11434"; .\venv\Scripts\python.exe -m unittest discover -s tests - ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (test_mixed_list...ed_list) ... ok:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+test_parse_ai_response_single_object (test_parsers_ocr.TestAiPayloadCoercion.test_parse_ai_response_single_object) ... 
+ok
+test_parse_ai_response_with_markdown (test_parsers_ocr.TestAiPayloadCoercion.test_parse_ai_response_with_markdown) ... 
+ok
+test_plain_list (test_parsers_ocr.TestAiPayloadCoercion.test_plain_list) ... ok
+test_questions_wrapper (test_parsers_ocr.TestAiPayloadCoercion.test_questions_wrapper) ... ok
+test_schema_exists (test_parsers_ocr.TestAiPayloadCoercion.test_schema_exists) ... ok
+test_single_object_becomes_list (test_parsers_ocr.TestAiPayloadCoercion.test_single_object_becomes_list) ... ok
+test_analyze_qnums_ocr (test_parsers_ocr.TestOcrTolerantParser.test_analyze_qnums_ocr) ... ok
+test_auto_merges_rule_parser (test_parsers_ocr.TestOcrTolerantParser.test_auto_merges_rule_parser) ... ok
+test_beats_rule_parser_by_10x (test_parsers_ocr.TestOcrTolerantParser.test_beats_rule_parser_by_10x) ... ok
+test_judge_questions_have_true_false (test_parsers_ocr.TestOcrTolerantParser.test_judge_questions_have_true_false) ... 
+ok
+test_no_empty_question_text (test_parsers_ocr.TestOcrTolerantParser.test_no_empty_question_text) ... ok
+test_option_letters_stripped_but_answer_maps (test_parsers_ocr.TestOcrTolerantParser.test_option_letters_stripped_but_a
+nswer_maps)
+ѡ�����ֲ�����ĸǰ׺��app.normalize_question ��������һ�Σ��� ... ok
+test_parses_most_blocks (test_parsers_ocr.TestOcrTolerantParser.test_parses_most_blocks) ... ok
+test_qnum_monotonic (test_parsers_ocr.TestOcrTolerantParser.test_qnum_monotonic)
+���Ӧ��������������"����©�𣬲������"���ߣ� ... ok
+test_questions_have_answers (test_parsers_ocr.TestOcrTolerantParser.test_questions_have_answers) ... ok
+test_auto_uses_rule_for_clean_text (test_parsers_ocr.TestRuleParserUnchanged.test_auto_uses_rule_for_clean_text) ... ok
+test_rule_parser (test_parsers_ocr.TestRuleParserUnchanged.test_rule_parser) ... ok
+
+----------------------------------------------------------------------
+Ran 18 tests in 0.166s
+
+OK

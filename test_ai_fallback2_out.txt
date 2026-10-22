@@ -1,0 +1,69 @@
+﻿=== 普通 OCR 解析 ===
+题目数：769, 耗时：0.1s
+带 warnings 的题目：162 / 769
+warnings 分布：162
+示例带 warnings 题目：
+  qnum=20 type=judge warnings=['letter_gap', 'letter_missing']
+    question=如下图所示， 主机A 和主机 B 不能通信。
+    options=['True', 'False 如下图所示，主机A和主机B不能通信 ( )', '上', 'OSTA HOST B IP: 10.0.12.1/30 IP: 10.0.12.2/24 MAC: MAC-A MAC:MAC-B L 错误']
+    answer=F
+    raw_text 长度=154
+  qnum=23 type=multiple warnings=['letter_missing']
+    question=根据如图所示的命令和输出，下列描述中正确的是?
+    options=['GigabitEthernet0/O/1 允许VLAN1 通过', 'GigabitEthernetO/0/1 不允许 VLAN1 通过', '如果要把 GilgabitEthernetO/O/1 变为Access 端口，首先需要使用命令“undo', 'port trunk allow-pass vian all” 如果要把 GigabitEthemet0/O/1 389 Access 庙口,首先需要使用命令“undo port trunk allow-pass vlan 2 to 4094"']
+    answer=['A', 'D']
+    raw_text 长度=319
+  qnum=25 type=single warnings=['letter_gap']
+    question=如果一个以太网数据帧的Lengthytype=0x8100，下列说法正确的是?
+    options=['这个数据帧的上层一定存在 TCP 首部', '这个数据帧一定携带了 vlan TAG', '这个数据帧的上层一定存在IP 首部']
+    answer=C
+    raw_text 长度=140
+  qnum=27 type=single warnings=['letter_gap']
+    question=以下关于链路聚合 LACP 模式选举 active HAAN, 正确的是?
+    options=['只比较接口优先级', '比较设备优先级', '只比较接口编号']
+    answer=A
+    raw_text 长度=116
+  qnum=28 type=single warnings=['letter_missing']
+    question=现有交换机 mac 地址如图， 下列说法正确的有?
+    options=['当交换机重启， 庙口 ElhO/O/2 学习到的 mac 地址不需要重新学习', '从端口学习到的源 mac 地址为 5489-9885-18a8，目的 mac 地址为 5489-', '989d-1d30 的 数据帧，从 EthO/O/1 庙口转发出去 从端口学习到的源 mac 地址为 5489-9811-0b49 ，目的 mac 地址为 5489-', '989d-1d30 的 数据帧，从 EthO/O/2 sae sete 当交换机重启，庙口 EthO/O/3 学习到的 mac 地址需要重新学习']
+    answer=B
+    raw_text 长度=293
+
+=== AI 兜底（前 3 个带 warnings 题目）===
+
+处理 qnum=20 (原 warnings=['letter_gap', 'letter_missing'])
+  raw_text: 20如下图所示， 主机A 和主机 B 不能通信。 (A) 【判断题}
+ATrue
+BFalse
+如下图所示，主机A和主机B不能通信 ( )
+上
+HOSTA HOST B
+IP: 10.0.12.1/30 IP: 10.0.12.2/24
+M
+[AI] 正在解析第 1/1 段...
+  AI 结果: type=multiple question=主机A和主机B不能通信的原因是（多选）
+    options=['A. IP地址冲突', 'B. 子网掩码不同', 'C. MAC地址不同', 'D. 网络设备故障']
+    answer=A,B
+
+处理 qnum=23 (原 warnings=['letter_missing'])
+  raw_text: 23 .根据如图所示的命令和输出，下列描述中正确的是? (AD) 【多选题】
+interface 51gabitEtherns
+to 4094
+AGigabitEthernet0/O/1 允许VLAN1 通过
+B.GigabitEthern
+[AI] 正在解析第 1/1 段...
+  AI 结果: type=multiple question=23 .根据如图所示的命令和输出，下列描述中正确的是? (AD)
+    options=['A. GigabitEthernet0/O/1 允许VLAN1 通过', 'B. GigabitEthernetO/0/1 不允许 VLAN1 通过', 'C. 如果要把 GigabitEthernetO/O/1 变为Access 端口，首先需要使用命令“undo port trunk allow-pass vlan all”', 'D. 如果要把 GigabitEthemet0/O/1 变为Access 端口，首先需要使用命令“undo port trunk allow-pass vlan 2 to 4094”']
+    answer=A,D
+
+处理 qnum=25 (原 warnings=['letter_gap'])
+  raw_text: 25 .如果一个以太网数据帧的Lengthytype=0x8100，下列说法正确的是? ( C ) 【单选是
+】 A这个数据帧的上层一定存在 UDP 首部
+B这个数据帧的上层一定存在 TCP 首部
+C 这个数据帧一定携带了 vlan TAG
+[AI] 正在解析第 1/1 段...
+  AI 结果: type=single question=如果一个以太网数据帧的Lengthytype=0x8100，下列说法正确的是？
+    options=['A. 这个数据帧的上层一定存在 UDP 首部', 'B. 这个数据帧的上层一定存在 TCP 首部', 'C. 这个数据帧一定携带了 vlan TAG', 'D. 这个数据帧的上层一定存在IP 首部']
+    answer=C
+
+AI 处理 3 题耗时：80.0s
